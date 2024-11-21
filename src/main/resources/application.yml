@@ -1,1 +1,10 @@
-spring.application.name=userservice
+server:
+  port: 8090
+
+spring:
+  application:
+    name:
+      userservice
+  profiles:
+    active:
+      dev
