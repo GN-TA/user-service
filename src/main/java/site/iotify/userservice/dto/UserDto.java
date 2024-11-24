@@ -8,7 +8,7 @@ public class UserDto {
 
     private String id;
     private String username;
-    private String encodedPassword;
+    private String password;
     private String email;
     private String auth;
     private String provider;
@@ -19,7 +19,7 @@ public class UserDto {
         }
         this.id = userEntity.getId();
         this.username = userEntity.getUsername();
-        this.encodedPassword = userEntity.getPassword();
+        this.password = userEntity.getPassword();
         this.email = userEntity.getEmail();
         this.auth = userEntity.getAuth();
         this.provider = userEntity.getProvider();
@@ -30,7 +30,7 @@ public class UserDto {
         return User.builder()
                 .id(id)
                 .username(username)
-                .password(encodedPassword)
+                .password(password)
                 .email(email)
                 .auth(auth)
                 .provider(provider)
