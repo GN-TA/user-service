@@ -1,12 +1,7 @@
 package site.iotify.userservice.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "users")
@@ -17,10 +12,16 @@ import lombok.NoArgsConstructor;
 public class User {
 
     @Id
-    private String id;
-    private String username;
-    private String password;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String email;
+
+    private String username;
+
+    private String password;
+
     private String auth;
+
     private String provider;
 }

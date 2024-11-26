@@ -21,14 +21,14 @@ public class AuthenticationService {
      * 사용자가 존재하지 않을 경우 {@code UserNotFoundException}을 발생시킵니다.
      * 사용자가 존재하면 해당 사용자의 인코딩된 비밀번호를 반환합니다.
      *
-     * @param id 조회할 사용자의 고유 ID. null이거나 비어 있어서는 안 됩니다.
+     * @param email 조회할 사용자의 이메일 아이디. null이거나 비어 있어서는 안 됩니다.
      * @return 지정된 ID에 해당하는 사용자의 인코딩된 비밀번호.
      * @throws UserNotFoundException 지정된 {@code id}에 해당하는 사용자가 없을 경우 발생합니다.
      */
-    public String loadPassword(String id) {
-        User user = userRepository.findById(id).orElse(null);
+    public String loadPassword(String email) {
+        User user = userRepository.findByEmail(email).orElse(null);
         if (user == null) {
-            throw new UserNotFoundException(id);
+            throw new UserNotFoundException(email);
         }
         return user.getPassword();
     }

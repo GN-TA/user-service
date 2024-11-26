@@ -2,7 +2,11 @@ package site.iotify.userservice.exception;
 
 public class UserNotFoundException extends RuntimeException {
 
-    public UserNotFoundException(String id) {
-        super("Could not find user with id " + id);
+    public UserNotFoundException(Long id) {
+        super("User not found with id " + id);
+    }
+
+    public UserNotFoundException(String email) {
+        super("Could not find user with email " + email);
     }
 }
