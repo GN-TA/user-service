@@ -1,5 +1,6 @@
 package site.iotify.userservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class UserDto {
     private String username;
 
     @Setter
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Setter

@@ -8,3 +8,16 @@ spring:
   profiles:
     active:
       dev
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${{ secrets.SPRING_MAIL_USERNAME }}
+    password: ${{ secrets.SPRING_MAIL_PASSWORD }}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true

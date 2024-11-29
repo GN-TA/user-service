@@ -77,7 +77,7 @@ public class UserController {
     @PostMapping("/user")
     @CrossOrigin(origins = "http://localhost:8080")
     public ResponseEntity<String> registerUser(@RequestBody UserDto userRegistrationRequest) {
-        if (!userRegistrationRequest.getProvider().equals("google") &&
+        if (userRegistrationRequest.getProvider() == null &&
                 !emailVerificationService.isEmailVerified(userRegistrationRequest.getEmail())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이메일 인증이 필요합니다.");
         }

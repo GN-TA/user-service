@@ -67,6 +67,7 @@ public class UserService {
         }
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
         userDto.setPassword(encodedPassword);
+        userDto.setAuth("ROLE_USER");
         User newUser = userDto.toEntity();
         userRepository.save(newUser);
     }
