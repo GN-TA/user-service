@@ -1,5 +1,6 @@
 package site.iotify.userservice.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 import site.iotify.userservice.entity.User;
@@ -9,6 +10,7 @@ public class UserDto {
 
     private Long id;
 
+    @NotBlank
     private String email;
 
     @Setter

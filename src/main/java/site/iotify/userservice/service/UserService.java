@@ -2,7 +2,7 @@ package site.iotify.userservice.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import site.iotify.userservice.UserRepository;
+import site.iotify.userservice.repository.UserRepository;
 import site.iotify.userservice.dto.ChangePasswordRequest;
 import site.iotify.userservice.dto.UserDto;
 import site.iotify.userservice.entity.User;

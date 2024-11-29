@@ -1,5 +1,6 @@
 package site.iotify.userservice.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import site.iotify.userservice.service.AuthenticationService;
 
 @Controller
+@Slf4j
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
@@ -33,4 +35,4 @@ public class AuthenticationController {
     public ResponseEntity<String> fetchPassword(@RequestParam String id) {
         return ResponseEntity.ok(authenticationService.loadPassword(id));
     }
-}
+    }

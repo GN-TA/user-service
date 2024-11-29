@@ -10,15 +10,18 @@ import site.iotify.userservice.exception.UnAuthenticatedException;
 import site.iotify.userservice.exception.UnAuthorizedException;
 import site.iotify.userservice.exception.UserAlreadyExistsException;
 import site.iotify.userservice.exception.UserNotFoundException;
+import site.iotify.userservice.service.EmailVerificationService;
 import site.iotify.userservice.service.UserService;
 
 @Controller
 public class UserController {
 
     private final UserService userService;
+    private final EmailVerificationService emailVerificationService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, EmailVerificationService emailVerificationService) {
         this.userService = userService;
+        this.emailVerificationService = emailVerificationService;
     }
 
     /**
@@ -72,7 +75,12 @@ public class UserController {
      * @throws UserAlreadyExistsException 사용자가 이미 존재할 경우 발생
      */
     @PostMapping("/user")
+    @CrossOrigin(origins = "http://localhost:8080")
     public ResponseEntity<String> registerUser(@RequestBody UserDto userRegistrationRequest) {
+        if (!userRegistrationRequest.getProvider().equals("google") &&
+                !emailVerificationService.isEmailVerified(userRegistrationRequest.getEmail())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이메일 인증이 필요합니다.");
+        }
         try {
             userService.registerUser(userRegistrationRequest);
         } catch (UserAlreadyExistsException e) {

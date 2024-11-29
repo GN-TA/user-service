@@ -1,4 +1,4 @@
-package site.iotify.userservice;
+package site.iotify.userservice.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import site.iotify.userservice.entity.User;

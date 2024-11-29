@@ -1,7 +1,7 @@
 package site.iotify.userservice.service;
 
 import org.springframework.stereotype.Service;
-import site.iotify.userservice.UserRepository;
+import site.iotify.userservice.repository.UserRepository;
 import site.iotify.userservice.entity.User;
 import site.iotify.userservice.exception.UserNotFoundException;
 
