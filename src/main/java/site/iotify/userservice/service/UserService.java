@@ -197,7 +197,7 @@ public class UserService {
      * @throws UnAuthorizedException 제공된 비밀번호가 저장된 비밀번호와 일치하지 않을 경우 발생
      */
     public void deleteUser(UserDto userDto) {
-        User user = userRepository.findByEmail(userDto.getPassword()).orElse(null);
+        User user = userRepository.findByEmail(userDto.getEmail()).orElse(null);
         if (user == null) {
             throw new UserNotFoundException(userDto.getEmail());
         }
