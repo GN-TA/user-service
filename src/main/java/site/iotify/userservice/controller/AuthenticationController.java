@@ -35,4 +35,4 @@ public class AuthenticationController {
     public ResponseEntity<String> fetchPassword(@RequestParam String id) {
         return ResponseEntity.ok(authenticationService.loadPassword(id));
     }
-    }
+}
