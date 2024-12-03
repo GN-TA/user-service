@@ -1,5 +1,5 @@
 server:
-  port: 8090
+  port: 8092
 
 spring:
   application:
@@ -12,8 +12,8 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${{ secrets.SPRING_MAIL_USERNAME }}
-    password: ${{ secrets.SPRING_MAIL_PASSWORD }}
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
     properties:
       mail:
         smtp:
