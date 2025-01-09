@@ -1,9 +1,8 @@
 package site.iotify.userservice.service;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 import site.iotify.userservice.adaptor.ChirpstackAdaptor;
-import site.iotify.userservice.dto.TenantDto;
+import site.iotify.userservice.dto.tenant.TenantDto;
 import site.iotify.userservice.entity.Tenant;
 import site.iotify.userservice.exception.TenantNotFoundException;
 import site.iotify.userservice.repository.TenantRepository;
@@ -29,7 +28,7 @@ public class TenantService {
      */
     public TenantDto registerTenant(TenantDto tenantDto) {
         return TenantDto.getDto(
-                tenantRepository.save(tenantDto.getEntity(tenantDto))
+                tenantRepository.save(TenantDto.getEntity(tenantDto))
         );
     }
 
@@ -39,7 +38,7 @@ public class TenantService {
      * @param ids
      * @return
      */
-    public List<TenantDto> getTenants(List<Integer> ids) {
+    public List<TenantDto> getTenants(List<String> ids) {
         List<Tenant> tenants = tenantRepository.findAllById(ids);
         if (tenants.isEmpty()) {
             throw new TenantNotFoundException("Tenant with Id " + ids + " not found");
@@ -57,8 +56,8 @@ public class TenantService {
      * @return
      */
     public TenantDto updateTenant(TenantDto tenantDto) {
-        Tenant tenant = tenantRepository.findById(tenantDto.getTenantId()).orElseThrow(() ->
-                new TenantNotFoundException("id : " + tenantDto.getTenantId() + " not found"));
+        Tenant tenant = tenantRepository.findById(tenantDto.getId()).orElseThrow(() ->
+                new TenantNotFoundException("id : " + tenantDto.getId() + " not found"));
 
         return TenantDto.getDto(
                 tenantRepository.save(TenantDto.getDto(tenant).getEntity(tenantDto))

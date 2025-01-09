@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import site.iotify.userservice.entity.Tenant;
 
 @Repository
-public interface TenantRepository extends JpaRepository<Tenant, Integer> {
+public interface TenantRepository extends JpaRepository<Tenant, String> {
 }
