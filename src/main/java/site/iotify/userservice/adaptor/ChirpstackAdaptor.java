@@ -6,9 +6,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import site.iotify.userservice.dto.tenant.ChirpstackTenantResponse;
-import site.iotify.userservice.dto.tenant.CreateTenantRequest;
+import site.iotify.userservice.dto.tenant.ChirpstackTenantListResponse;
 import site.iotify.userservice.dto.tenant.TenantDto;
+import site.iotify.userservice.dto.tenant.TenantInfo;
 import site.iotify.userservice.entity.Tenant;
 import site.iotify.userservice.interceptor.LoggingInterceptor;
 import site.iotify.userservice.util.HttpEntityFactory;
@@ -33,7 +33,16 @@ public class ChirpstackAdaptor {
         this.restTemplate.getInterceptors().add(new LoggingInterceptor());
     }
 
-    public List<Tenant> getTenants(int limit, int offset, String search, String userId) {
+    /**
+     * chirpstack rest api에 조직 리스트를 조회하는 메서드입니다.
+     *
+     * @param limit  검색결과 갯수 제한 파라미터
+     * @param offset 검색결과 중 offset만큼 건너뛰고 조회하고자 할때 사용하는 파라미터
+     * @param search 검색하고자 하는 조직 정보, null 전달 시 쿼리 파라미터로 입력 되지 않음
+     * @param userId 유저가 속한 조직 정보를 조회하기 위한 파라미터, null 전달 시 쿼리 파라미터로 입력 되지 않고 모든 조직 검색
+     * @return
+     */
+    public List<TenantInfo> getTenants(int limit, int offset, String search, String userId) {
         HttpEntity<Void> httpRequest = HttpEntityFactory.<Void>builder()
                 .contentType(MediaType.APPLICATION_JSON)
                 .setBearerAuth(key)
@@ -46,21 +55,21 @@ public class ChirpstackAdaptor {
                 .queryParam("offset", offset)
                 .queryParam("search", search)
                 .queryParam("userId", userId);
-        ResponseEntity<ChirpstackTenantResponse> exchange = restTemplate.exchange(
+        ResponseEntity<ChirpstackTenantListResponse> exchange = restTemplate.exchange(
                 uriComponentsBuilder.toUriString(),
                 HttpMethod.GET,
                 httpRequest,
-                new ParameterizedTypeReference<ChirpstackTenantResponse>() {
+                new ParameterizedTypeReference<ChirpstackTenantListResponse>() {
                 });
 
         return Objects.requireNonNull(exchange.getBody()).getResult();
     }
 
-    public String createTenant(CreateTenantRequest tenantRequest) {
-        HttpEntity<CreateTenantRequest> httpRequest = HttpEntityFactory.<CreateTenantRequest>builder()
+    public String createTenant(TenantDto tenantDto) {
+        HttpEntity<TenantDto> httpRequest = HttpEntityFactory.<TenantDto>builder()
                 .contentType(MediaType.APPLICATION_JSON)
                 .setBearerAuth(key)
-                .body(tenantRequest)
+                .body(tenantDto)
                 .build();
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(host)
                 .port(port)
@@ -75,5 +84,40 @@ public class ChirpstackAdaptor {
         );
 
         return exchange.getBody();
+    }
+
+    public TenantDto getTenant(String id) {
+        HttpEntity<Void> httpEntity = HttpEntityFactory.<Void>builder()
+                .contentType(MediaType.APPLICATION_JSON)
+                .setBearerAuth(key)
+                .build();
+        UriComponentsBuilder uriComponentBuilder = UriComponentsBuilder.fromHttpUrl(host)
+                .port(port)
+                .path(String.format("/api/tenants/%s", id));
+        ResponseEntity<TenantDto> tenantDto = restTemplate.exchange(
+                uriComponentBuilder.toUriString(),
+                HttpMethod.GET,
+                httpEntity,
+                new ParameterizedTypeReference<TenantDto>() {
+                }
+        );
+        return tenantDto.getBody();
+    }
+
+    public void updateTenant(TenantDto tenantDto) {
+        HttpEntity<TenantDto> httpEntity = HttpEntityFactory.<TenantDto>builder()
+                .contentType(MediaType.APPLICATION_JSON)
+                .setBearerAuth(key)
+                .body(tenantDto)
+                .build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(host)
+                .port(port)
+                .path(String.format("/api/tenants/%s", tenantDto.getTenant().getId()));
+
+        restTemplate.exchange(uriComponentsBuilder.toUriString(),
+                HttpMethod.PUT,
+                httpEntity,
+                Void.class);
     }
 }

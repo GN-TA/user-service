@@ -2,13 +2,12 @@ package site.iotify.userservice.dto.tenant;
 
 import lombok.Getter;
 import lombok.Setter;
-import site.iotify.userservice.entity.Tenant;
 
 import java.util.List;
 
 @Getter
 @Setter
-public class ChirpstackTenantResponse {
+public class ChirpstackTenantListResponse {
     private int totalCount;
-    private List<Tenant> result;
+    private List<TenantInfo> result;
 }

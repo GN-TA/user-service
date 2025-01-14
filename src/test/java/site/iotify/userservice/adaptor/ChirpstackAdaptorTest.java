@@ -4,8 +4,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
-import site.iotify.userservice.dto.tenant.CreateTenantRequest;
 import site.iotify.userservice.dto.tenant.TenantDto;
+import site.iotify.userservice.dto.tenant.TenantInfo;
 import site.iotify.userservice.entity.Tenant;
 import site.iotify.userservice.entity.TenantTag;
 
@@ -25,9 +25,9 @@ class ChirpstackAdaptorTest {
 
     @Test
     void getTenants() {
-        List<Tenant> tenantList = chirpstackAdaptor.getTenants(100, 0, null, "05244f12-6daf-4e1f-8315-c66783a0ab56");
+        List<TenantInfo> tenantList = chirpstackAdaptor.getTenants(100, 0, null, "05244f12-6daf-4e1f-8315-c66783a0ab56");
 
-        for (Tenant t : tenantList) {
+        for (TenantInfo t : tenantList) {
             System.out.println(t.getId());
         }
     }
@@ -45,9 +45,31 @@ class ChirpstackAdaptorTest {
                 .ip("asdfasdf")
                 .build();
         tenant.setTags(List.of(new TenantTag(0, "asdf", "asdf", tenant)));
-        CreateTenantRequest createTenantRequest = new CreateTenantRequest(TenantDto.getDto(tenant), LocalDateTime.now(), LocalDateTime.now());
-        String tenantId = chirpstackAdaptor.createTenant(createTenantRequest);
+        TenantDto tenantDto = new TenantDto(TenantInfo.getDto(tenant), LocalDateTime.now(), LocalDateTime.now());
+        String tenantId = chirpstackAdaptor.createTenant(tenantDto);
 
         System.out.println(tenantId);
+    }
+
+    @Test
+    void updateTenant() {
+        TenantDto tenantDto = new TenantDto(
+                new TenantInfo(
+                        "1d12eaf1-ca63-4a50-8efc-3b50c76c98d6",
+                        "qwer",
+                        "qwerdecrip",
+                        true,
+                        false,
+                        true,
+                        0,
+                        0,
+                        "11212121",
+                        null
+                ),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+
+        chirpstackAdaptor.updateTenant(tenantDto);
     }
 }

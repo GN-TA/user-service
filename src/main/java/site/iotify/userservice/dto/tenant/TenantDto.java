@@ -1,51 +1,22 @@
 package site.iotify.userservice.dto.tenant;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import site.iotify.userservice.entity.Tenant;
 import site.iotify.userservice.entity.TenantTag;
 
-import java.util.Map;
+import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
 public class TenantDto {
-    private String id;
-    private String name;
-    private String description;
-    private boolean canHaveGateways;
-    private boolean privateGatewaysUp;
-    private boolean privateGatewaysDown;
-    private int maxGatewayCount;
-    private int maxDeviceCount;
-    private String ip;
-    private Map<String, String> tags;
+    private TenantInfo tenant;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    public static Tenant getEntity(TenantDto tenantDto) {
-        Tenant tenant = Tenant.builder()
-                .id(tenantDto.getId())
-                .name(tenantDto.getName())
-                .description(tenantDto.getDescription())
-                .canHaveGateway(tenantDto.isCanHaveGateways())
-                .privateGatewaysUp(tenantDto.isPrivateGatewaysUp())
-                .privateGatewaysDown(tenantDto.isPrivateGatewaysDown())
-                .maxDeviceCount(tenantDto.getMaxDeviceCount())
-                .ip(tenantDto.getIp())
-                .build();
-        if (!tenantDto.getTags().isEmpty()) {
-            tenant.setTags(
-                    tenantDto.getTags()
-                            .entrySet()
-                            .stream()
-                            .map(tag -> new TenantTag(0, tag.getKey(), tag.getValue(), tenant))
-                            .collect(Collectors.toList())
-            );
-        }
-        return tenant;
-    }
-
-    public static TenantDto getDto(Tenant tenant) {
-        return new TenantDto(
+    public static TenantDto toDto(Tenant tenant) {
+        return new TenantDto(new TenantInfo(
                 tenant.getId(),
                 tenant.getName(),
                 tenant.getDescription(),
@@ -55,8 +26,32 @@ public class TenantDto {
                 tenant.getMaxGatewayCount(),
                 tenant.getMaxDeviceCount(),
                 tenant.getIp(),
-                tenant.getTags().stream()
-                        .collect(Collectors.toMap(TenantTag::getKey, TenantTag::getValue))
-        );
+                tenant.getTags().stream().collect(Collectors.toMap(TenantTag::getKey, TenantTag::getValue))
+        ), tenant.getCreatedAt(), tenant.getUpdatedAt());
+    }
+
+    public static Tenant toEntity(TenantDto tenantDto) {
+        TenantInfo tenantInfo = tenantDto.getTenant();
+        Tenant tenantEntity = Tenant.builder()
+                .id(tenantInfo.getId())
+                .name(tenantInfo.getName())
+                .description(tenantInfo.getDescription())
+                .canHaveGateway(tenantInfo.isPrivateGatewaysUp())
+                .privateGatewaysUp(tenantInfo.isPrivateGatewaysUp())
+                .privateGatewaysDown(tenantInfo.isPrivateGatewaysDown())
+                .maxGatewayCount(tenantInfo.getMaxGatewayCount())
+                .maxDeviceCount(tenantInfo.getMaxDeviceCount())
+                .ip(tenantInfo.getIp())
+                .build();
+        if (!tenantInfo.getTags().isEmpty()) {
+            tenantEntity.setTags(
+                    tenantInfo.getTags()
+                            .entrySet()
+                            .stream()
+                            .map(tag -> new TenantTag(0, tag.getKey(), tag.getValue(), tenantEntity))
+                            .collect(Collectors.toList())
+            );
+        }
+        return tenantEntity;
     }
 }
