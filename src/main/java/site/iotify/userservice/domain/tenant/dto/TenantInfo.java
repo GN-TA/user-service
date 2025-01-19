@@ -1,8 +1,8 @@
-package site.iotify.userservice.dto.tenant;
+package site.iotify.userservice.domain.tenant.dto;
 
 import lombok.*;
-import site.iotify.userservice.entity.Tenant;
-import site.iotify.userservice.entity.TenantTag;
+import site.iotify.userservice.domain.tenant.entity.Tenant;
+import site.iotify.userservice.domain.tenant.entity.TenantTag;
 
 import java.util.Map;
 import java.util.stream.Collectors;

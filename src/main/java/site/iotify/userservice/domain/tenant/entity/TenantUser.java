@@ -1,8 +1,9 @@
-package site.iotify.userservice.entity;
+package site.iotify.userservice.domain.tenant.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import site.iotify.userservice.entity.User;
 
 import java.io.Serializable;
 

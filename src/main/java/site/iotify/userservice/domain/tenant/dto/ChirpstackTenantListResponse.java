@@ -1,4 +1,4 @@
-package site.iotify.userservice.dto.tenant;
+package site.iotify.userservice.domain.tenant.dto;
 
 import lombok.Getter;
 import lombok.Setter;

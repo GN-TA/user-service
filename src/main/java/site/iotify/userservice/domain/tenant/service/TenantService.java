@@ -1,16 +1,17 @@
-package site.iotify.userservice.service;
+package site.iotify.userservice.domain.tenant.service;
 
 import org.springframework.stereotype.Service;
 import site.iotify.userservice.adaptor.ChirpstackAdaptor;
-import site.iotify.userservice.dto.tenant.TenantDto;
-import site.iotify.userservice.dto.tenant.TenantInfo;
-import site.iotify.userservice.entity.Tenant;
+import site.iotify.userservice.domain.tenant.dto.TenantDto;
+import site.iotify.userservice.domain.tenant.dto.TenantInfo;
+import site.iotify.userservice.domain.tenant.entity.Tenant;
+import site.iotify.userservice.domain.tenant.repository.TenantRepository;
+import site.iotify.userservice.dto.ChirpstackUserDto;
 import site.iotify.userservice.exception.CreationFailedException;
 import site.iotify.userservice.exception.TenantNotFoundException;
-import site.iotify.userservice.repository.TenantRepository;
+import site.iotify.userservice.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -74,6 +75,20 @@ public class TenantService {
     }
 
     /**
+     * 사용자가 속한 조직을 반환합니다.
+     *
+     * @param userId
+     * @return
+     */
+    public List<TenantInfo> getTenantsByUser(String userId) {
+        ChirpstackUserDto user = chirpstackAdaptor.getUser(userId);
+        if (Objects.isNull(user)) {
+            throw new UserNotFoundException(String.format("user {%s} not found in chirpstack DB", userId));
+        }
+        return chirpstackAdaptor.getTenants(100, 0, null, user.getUser().getUserId());
+    }
+
+    /**
      * 특정 조직의 정보를 수정합니다.
      *
      * @param tenantInfo
@@ -88,5 +103,10 @@ public class TenantService {
         return TenantInfo.getDto(
                 tenantRepository.save(TenantDto.toEntity(chirpstackAdaptor.getTenant(tenantInfo.getId())))
         );
+    }
+
+    // todo user add
+    public void addUserInTenant() {
+
     }
 }

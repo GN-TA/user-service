@@ -4,10 +4,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
-import site.iotify.userservice.dto.tenant.TenantDto;
-import site.iotify.userservice.dto.tenant.TenantInfo;
-import site.iotify.userservice.entity.Tenant;
-import site.iotify.userservice.entity.TenantTag;
+import site.iotify.userservice.domain.tenant.dto.TenantDto;
+import site.iotify.userservice.domain.tenant.dto.TenantInfo;
+import site.iotify.userservice.domain.tenant.entity.Tenant;
+import site.iotify.userservice.domain.tenant.entity.TenantTag;
 
 import java.time.LocalDateTime;
 import java.util.List;

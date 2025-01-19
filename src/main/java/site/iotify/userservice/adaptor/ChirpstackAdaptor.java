@@ -6,10 +6,11 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import site.iotify.userservice.dto.tenant.ChirpstackTenantListResponse;
-import site.iotify.userservice.dto.tenant.TenantDto;
-import site.iotify.userservice.dto.tenant.TenantInfo;
-import site.iotify.userservice.entity.Tenant;
+import site.iotify.userservice.domain.tenant.dto.ChirpstackTenantListResponse;
+import site.iotify.userservice.domain.tenant.dto.TenantDto;
+import site.iotify.userservice.domain.tenant.dto.TenantInfo;
+import site.iotify.userservice.dto.ChirpstackTenantUserDto;
+import site.iotify.userservice.dto.ChirpstackUserDto;
 import site.iotify.userservice.interceptor.LoggingInterceptor;
 import site.iotify.userservice.util.HttpEntityFactory;
 
@@ -117,6 +118,44 @@ public class ChirpstackAdaptor {
 
         restTemplate.exchange(uriComponentsBuilder.toUriString(),
                 HttpMethod.PUT,
+                httpEntity,
+                Void.class);
+    }
+
+    public ChirpstackUserDto getUser(String id) {
+        HttpEntity<Void> httpEntity = HttpEntityFactory.<Void>builder()
+                .setBearerAuth(key)
+                .contentType(MediaType.APPLICATION_JSON)
+                .build();
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(host)
+                .port(port)
+                .path(String.format("/api/users/%s", id));
+
+        ResponseEntity<ChirpstackUserDto> response = restTemplate.exchange(
+                uriComponentsBuilder.toUriString(),
+                HttpMethod.GET,
+                httpEntity,
+                new ParameterizedTypeReference<ChirpstackUserDto>() {
+                });
+
+        return response.getBody();
+    }
+
+    // todo add user in tenant
+    public void addUserInTenant(ChirpstackTenantUserDto chirpstackTenantUserDto) {
+        HttpEntity<ChirpstackTenantUserDto> httpEntity = HttpEntityFactory.<ChirpstackTenantUserDto>builder()
+                .contentType(MediaType.APPLICATION_JSON)
+                .setBearerAuth(key)
+                .body(chirpstackTenantUserDto)
+                .build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(host)
+                .port(port)
+                .path(String.format("/api/tenants/%s/users", chirpstackTenantUserDto.getTenantUser().getUserId()));
+
+        restTemplate.exchange(
+                uriComponentsBuilder.toUriString(),
+                HttpMethod.POST,
                 httpEntity,
                 Void.class);
     }
