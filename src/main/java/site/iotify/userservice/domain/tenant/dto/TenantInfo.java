@@ -5,6 +5,7 @@ import site.iotify.userservice.domain.tenant.entity.Tenant;
 import site.iotify.userservice.domain.tenant.entity.TenantTag;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Data
@@ -58,5 +59,25 @@ public class TenantInfo {
                 tenant.getTags().stream()
                         .collect(Collectors.toMap(TenantTag::getKey, TenantTag::getValue))
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TenantInfo that = (TenantInfo) o;
+        return isCanHaveGateways() == that.isCanHaveGateways()
+                && isPrivateGatewaysUp() == that.isPrivateGatewaysUp()
+                && isPrivateGatewaysDown() == that.isPrivateGatewaysDown()
+                && getMaxGatewayCount() == that.getMaxGatewayCount()
+                && getMaxDeviceCount() == that.getMaxDeviceCount()
+                && Objects.equals(getId(), that.getId())
+                && Objects.equals(getName(), that.getName())
+                && Objects.equals(getDescription(), that.getDescription());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getDescription(), isCanHaveGateways(), isPrivateGatewaysUp(), isPrivateGatewaysDown(), getMaxGatewayCount(), getMaxDeviceCount());
     }
 }

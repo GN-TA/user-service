@@ -35,7 +35,7 @@ public class UserController {
      * @throws UserNotFoundException 주어진 ID를 가진 사용자가 존재하지 않을 경우 발생
      */
     @GetMapping("/user/{id}")
-    public ResponseEntity<UserDto> fetchUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDto> fetchUserById(@PathVariable String id) {
         UserDto userDto = userService.loadUserById(id);
         if (userDto == null) {
             throw new UserNotFoundException(id);
@@ -71,7 +71,7 @@ public class UserController {
      *
      * @param userRegistrationRequest 등록할 사용자 정보를 담은 {@link UserDto}
      * @return 성공 시 등록된 사용자의 ID를 포함한 HTTP 201(CREATED) 응답,
-     *         사용자 중복 시 HTTP 409(CONFLICT) 상태와 오류 메시지를 반환
+     * 사용자 중복 시 HTTP 409(CONFLICT) 상태와 오류 메시지를 반환
      * @throws UserAlreadyExistsException 사용자가 이미 존재할 경우 발생
      */
     @PostMapping("/user")
@@ -103,11 +103,11 @@ public class UserController {
      * @param changePasswordRequest 사용자의 이메일, 기존 비밀번호, 새 비밀번호, 확인 비밀번호를 포함한 비밀번호 변경 요청 데이터
      * @return 비밀번호 변경 성공 시 HTTP 상태 코드 200(OK)을 포함하는 {@code ResponseEntity}
      * @throws IllegalArgumentException 다음 경우에 발생:
-     *         <ul>
-     *           <li>새 비밀번호와 확인 비밀번호가 일치하지 않을 경우</li>
-     *           <li>새 비밀번호가 기존 비밀번호와 동일할 경우</li>
-     *         </ul>
-     * @throws UserNotFoundException 제공된 이메일에 해당하는 사용자가 존재하지 않을 경우 발생
+     *                                  <ul>
+     *                                    <li>새 비밀번호와 확인 비밀번호가 일치하지 않을 경우</li>
+     *                                    <li>새 비밀번호가 기존 비밀번호와 동일할 경우</li>
+     *                                  </ul>
+     * @throws UserNotFoundException    제공된 이메일에 해당하는 사용자가 존재하지 않을 경우 발생
      */
     @PostMapping("/pwd")
     public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
@@ -153,10 +153,10 @@ public class UserController {
      * 요청 사용자가 인증되지 않았거나 관리자 권한이 없는 경우, 각각 예외를 발생시킵니다.
      *
      * @param requestUserDto 권한 변경 요청을 수행하는 사용자 정보를 포함한 데이터 객체
-     * @param targetEmail 권한을 변경할 대상 사용자의 이메일 주소
-     * @param auth 변경할 권한 값
+     * @param targetEmail    권한을 변경할 대상 사용자의 이메일 주소
+     * @param auth           변경할 권한 값
      * @return 권한 변경 성공 시 HTTP 상태 코드 200(OK)을 포함하는 {@code ResponseEntity}
-     * @throws UnAuthorizedException 요청 사용자가 인증되지 않은 경우 발생
+     * @throws UnAuthorizedException    요청 사용자가 인증되지 않은 경우 발생
      * @throws UnAuthenticatedException 요청 사용자가 관리자 권한이 없는 경우 발생
      */
     @PostMapping("/auth")

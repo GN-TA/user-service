@@ -31,7 +31,7 @@ public class UserService {
      * @param id 조회할 사용자의 고유 식별자
      * @return {@link UserDto} 객체 또는 사용자가 존재하지 않을 경우 {@code null}
      */
-    public UserDto loadUserById(Long id) {
+    public UserDto loadUserById(String id) {
         User user = userRepository.findById(id).orElse(null);
         return new UserDto().fromEntity(user);
     }
@@ -87,7 +87,7 @@ public class UserService {
      * </ol>
      *
      * @param changePasswordRequest 비밀번호 변경에 필요한 사용자 이메일, 기존 비밀번호, 새 비밀번호를 포함한 요청 객체
-     * @throws UserNotFoundException 제공된 이메일에 해당하는 사용자가 존재하지 않을 경우 발생
+     * @throws UserNotFoundException    제공된 이메일에 해당하는 사용자가 존재하지 않을 경우 발생
      * @throws UnAuthenticatedException 기존 비밀번호가 올바르지 않을 경우 발생
      */
     public void changePassword(ChangePasswordRequest changePasswordRequest) {
@@ -119,7 +119,7 @@ public class UserService {
      * </ol>
      *
      * @param userDto 업데이트할 사용자 정보를 포함한 데이터 객체
-     * @throws UserNotFoundException 제공된 이메일에 해당하는 사용자가 존재하지 않을 경우 발생
+     * @throws UserNotFoundException    제공된 이메일에 해당하는 사용자가 존재하지 않을 경우 발생
      * @throws IllegalArgumentException 유저 이름 이외의 다른 정보를 수정하려 할 경우 발생
      */
     public void updateUserInfo(UserDto userDto) {
@@ -127,7 +127,7 @@ public class UserService {
         if (user == null) {
             throw new UserNotFoundException(user.getEmail());
         }
-        if (    !passwordEncoder.matches(userDto.getPassword(), user.getPassword()) ||
+        if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword()) ||
                 !userDto.getId().equals(user.getId()) ||
                 !userDto.getAuth().equals(user.getAuth()) ||
                 !userDto.getProvider().equals(user.getProvider())
@@ -156,10 +156,10 @@ public class UserService {
      * </ol>
      *
      * @param requestUserDto 권한 변경 요청을 수행하는 사용자 정보를 포함한 데이터 객체
-     * @param targetEmail 권한을 변경할 대상 사용자의 이메일
-     * @param auth 새로 설정할 권한 값
-     * @throws UserNotFoundException 요청 사용자가 존재하지 않을 경우 발생
-     * @throws UnAuthorizedException 요청 사용자의 비밀번호가 일치하지 않을 경우 발생
+     * @param targetEmail    권한을 변경할 대상 사용자의 이메일
+     * @param auth           새로 설정할 권한 값
+     * @throws UserNotFoundException    요청 사용자가 존재하지 않을 경우 발생
+     * @throws UnAuthorizedException    요청 사용자의 비밀번호가 일치하지 않을 경우 발생
      * @throws UnAuthenticatedException 요청 사용자가 관리자 권한(ROLE_ADMIN)이 아닐 경우 발생
      */
     public void changeAuth(UserDto requestUserDto, String targetEmail, String auth) {

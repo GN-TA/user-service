@@ -141,7 +141,6 @@ public class ChirpstackAdaptor {
         return response.getBody();
     }
 
-    // todo add user in tenant
     public void addUserInTenant(ChirpstackTenantUserDto chirpstackTenantUserDto) {
         HttpEntity<ChirpstackTenantUserDto> httpEntity = HttpEntityFactory.<ChirpstackTenantUserDto>builder()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -151,7 +150,7 @@ public class ChirpstackAdaptor {
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(host)
                 .port(port)
-                .path(String.format("/api/tenants/%s/users", chirpstackTenantUserDto.getTenantUser().getUserId()));
+                .path(String.format("/api/tenants/%s/users", chirpstackTenantUserDto.getTenantId()));
 
         restTemplate.exchange(
                 uriComponentsBuilder.toUriString(),

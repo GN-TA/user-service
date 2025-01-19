@@ -1,5 +1,6 @@
 package site.iotify.userservice.domain.tenant.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,18 +21,18 @@ public class TenantController {
      *
      * @return
      */
-    @GetMapping("/tenants/{userId}")
-    public ResponseEntity<List<TenantInfo>> getTenants(@PathVariable String userId) {
+    @GetMapping("/tenants")
+    public ResponseEntity<List<TenantInfo>> getTenants(@RequestHeader("X-USER-ID") String userId) {
         return ResponseEntity.status(HttpStatus.OK).body(tenantService.getTenantsByUser(userId));
     }
 
-    @PostMapping("/tenants/{userId}")
-    public ResponseEntity<String> createTenant(@PathVariable String userId,
+    @PostMapping("/tenants")
+    public ResponseEntity<String> createTenant(@RequestHeader("X-USER-ID") String userId,
                                                @RequestBody TenantInfo tenantInfo) {
+        TenantInfo createdTenant = tenantService.registerTenant(tenantInfo);
+        tenantService.addAdminUserInTenant(userId, createdTenant.getId());
 
-        ResponseEntity.status(HttpStatus.CREATED).body(tenantService.registerTenant(tenantInfo).getId());
-
-        return null;
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTenant.getId());
     }
 
 }

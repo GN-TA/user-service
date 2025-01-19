@@ -6,10 +6,14 @@ import site.iotify.userservice.domain.tenant.dto.TenantDto;
 import site.iotify.userservice.domain.tenant.dto.TenantInfo;
 import site.iotify.userservice.domain.tenant.entity.Tenant;
 import site.iotify.userservice.domain.tenant.repository.TenantRepository;
+import site.iotify.userservice.dto.ChirpstackTenantUserDto;
 import site.iotify.userservice.dto.ChirpstackUserDto;
+import site.iotify.userservice.dto.ChirpstackUserInfo;
+import site.iotify.userservice.entity.User;
 import site.iotify.userservice.exception.CreationFailedException;
 import site.iotify.userservice.exception.TenantNotFoundException;
 import site.iotify.userservice.exception.UserNotFoundException;
+import site.iotify.userservice.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,11 +24,13 @@ import java.util.stream.Collectors;
 @Service
 public class TenantService {
     private final TenantRepository tenantRepository;
+    private final UserRepository userRepository;
     private final ChirpstackAdaptor chirpstackAdaptor;
 
-    public TenantService(TenantRepository tenantRepository, ChirpstackAdaptor chirpstackAdaptor) {
+    public TenantService(TenantRepository tenantRepository, ChirpstackAdaptor chirpstackAdaptor, UserRepository userRepository) {
         this.tenantRepository = tenantRepository;
         this.chirpstackAdaptor = chirpstackAdaptor;
+        this.userRepository = userRepository;
     }
 
     /**
@@ -105,8 +111,67 @@ public class TenantService {
         );
     }
 
-    // todo user add
-    public void addUserInTenant() {
+    /**
+     * 조직에 사용자 추가합니다.
+     *
+     * @param userId
+     * @param tenantId
+     */
+    public void addUserInTenant(String userId, String tenantId) {
+        User user = userRepository.findByEmail(userId)
+                .orElseThrow(() -> new UserNotFoundException(String.format("user {%s} not found", userId)));
+        if (checkSync(tenantId)) {
+            chirpstackAdaptor.addUserInTenant(new ChirpstackTenantUserDto(
+                    new ChirpstackUserInfo(
+                            user.getEmail(),
+                            false,
+                            true,
+                            user.getEmail(),
+                            null,
+                            LocalDateTime.now(),
+                            LocalDateTime.now(),
+                            true,
+                            true
+                    ), tenantId));
+        }
+    }
 
+    /**
+     * 조직에 관리자 사용자를 추가합니다.
+     *
+     * @param userId
+     * @param tenantId
+     */
+    public void addAdminUserInTenant(String userId, String tenantId) {
+        User user = userRepository.findByEmail(userId)
+                .orElseThrow(() -> new UserNotFoundException(String.format("user {%s} not found", userId)));
+        if (checkSync(tenantId)) {
+            chirpstackAdaptor.addUserInTenant(new ChirpstackTenantUserDto(
+                    new ChirpstackUserInfo(
+                            user.getEmail(),
+                            true,
+                            true,
+                            user.getEmail(),
+                            null,
+                            LocalDateTime.now(),
+                            LocalDateTime.now(),
+                            true,
+                            true
+                    ), tenantId));
+
+        }
+    }
+
+    private boolean checkSync(String tenantId) {
+        Tenant tenant = tenantRepository.findById(tenantId)
+                .orElseThrow(() -> new TenantNotFoundException(String.format("tenant %s not found", tenantId)));
+        TenantInfo repositoryTenantInfo = TenantInfo.getDto(tenant);
+        TenantDto tenantDto = chirpstackAdaptor.getTenant(tenantId);
+        if (tenantDto == null) {
+            throw new TenantNotFoundException(String.format("tenant %s not found", tenantId));
+        }
+        TenantInfo chirpstackTenantInfo = tenantDto.getTenant();
+
+        return chirpstackTenantInfo.equals(repositoryTenantInfo);
     }
 }
