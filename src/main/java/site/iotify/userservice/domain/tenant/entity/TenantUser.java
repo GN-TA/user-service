@@ -3,7 +3,7 @@ package site.iotify.userservice.domain.tenant.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import site.iotify.userservice.entity.User;
+import site.iotify.userservice.domain.user.entity.User;
 
 import java.io.Serializable;
 
