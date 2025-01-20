@@ -1,15 +1,14 @@
 package site.iotify.userservice.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import site.iotify.userservice.service.EmailVerificationService;
+import java.util.Map;
 
 @Controller
 @Slf4j
-@CrossOrigin(origins = "http://localhost:8080")
 public class EmailVerificationController {
 
     private final EmailVerificationService emailVerificationService;
@@ -19,35 +18,24 @@ public class EmailVerificationController {
     }
 
     @PostMapping("/email-verify")
-    public ResponseEntity<?> sendVerificationEmail(@RequestBody String email) {
+    public ResponseEntity<?> sendVerificationEmail(@RequestBody Map<String, String> email) {
         log.info("Email verification request received: {}", email);
-        emailVerificationService.generateToken(email);
+        emailVerificationService.generateVerificationCode(email.get("email"));
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/verify-email")
-    public ResponseEntity<?> verifyEmail(@RequestParam String token) {
-        log.info("Email verification request received: {}", token);
-        boolean isVerified = emailVerificationService.verifyToken(token);
+    @PostMapping("/verify-code")
+    public ResponseEntity<?> verifyCode(@RequestBody Map<String, String> request) {
+        String email = request.get("email");
+        String code = request.get("code");
+        log.info("Verification code check request received: email={}, code={}", email, code);
+        boolean isVerified = emailVerificationService.verifyCode(email, code);
         if (isVerified) {
             log.info("Email verification success");
             return ResponseEntity.ok().build();
         } else {
             log.warn("Email verification failed");
-            return ResponseEntity.badRequest().body("Email verification failed");
-        }
-    }
-
-    @GetMapping("/check-email")
-    public ResponseEntity<?> checkEmailVerification(@RequestParam String email) {
-        log.info("이메일 인증 확인 요청: {}", email);
-        boolean isVerified = emailVerificationService.isEmailVerified(email);
-        if (isVerified) {
-            log.info("Email verification success");
-            return ResponseEntity.ok().build();
-        } else {
-            log.warn("Email verification failed");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            return ResponseEntity.badRequest().body("Invalid verification code");
         }
     }
 }

@@ -3,81 +3,66 @@ package site.iotify.userservice.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StreamUtils;
-import site.iotify.userservice.domain.EmailVerificationToken;
-import site.iotify.userservice.repository.EmailVerificationTokenRepository;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.UUID;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Slf4j
 public class EmailVerificationService {
 
     private final JavaMailSender mailSender;
-    private final EmailVerificationTokenRepository emailVerificationTokenRepository;
+    private final Map<String, String> verificationCodes = new ConcurrentHashMap<>();
 
-    public EmailVerificationService(JavaMailSender mailSender, EmailVerificationTokenRepository emailVerificationTokenRepository) {
+
+    public EmailVerificationService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
-        this.emailVerificationTokenRepository = emailVerificationTokenRepository;
-    }
-
-    public void generateToken(String email) {
-        String token = UUID.randomUUID().toString();
-        EmailVerificationToken emailToken = new EmailVerificationToken(token, email, LocalDateTime.now().plusHours(24));
-        emailVerificationTokenRepository.save(token, emailToken);
-
-        log.info("Email verification token generated: {}", token);
-        log.info("email: {}", email);
-        sendVerificationEmail(email, token);
-    }
-
-    public boolean verifyToken(String token) {
-        EmailVerificationToken emailToken = emailVerificationTokenRepository.findByToken(token);
-
-        if (emailToken == null || emailToken.isExpired()) {
-            return false;
-        }
-        emailVerificationTokenRepository.delete(token);
-        return true;
     }
 
     public boolean isEmailVerified(String email) {
-
-        EmailVerificationToken emailToken = emailVerificationTokenRepository.findByEmail(email);
-        if (emailToken == null || emailToken.isExpired()) {
+        String emailToken = verificationCodes.get(email);
+        if (emailToken == null) {
             return false;
         }
         return true;
     }
 
     private void sendVerificationEmail(String email, String token) {
-        String link = "http://localhost:8090/verify-email?token=" + token;
-        try {
-            ClassPathResource resource = new ClassPathResource("./verificationEmail.html");
-            String htmlContent = StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8);
-            htmlContent = htmlContent.replace("{{verificationLink}}", link);
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
 
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "UTF-8");
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             helper.setTo(email);
-            helper.setFrom("noreply@iotify.site");
-            helper.setSubject("IoTify 회원가입 인증코드");
-            helper.setText(htmlContent, true);
+            helper.setSubject("이메일 인증 코드");
+            helper.setText(buildEmailContent(token), true); // HTML 내용 지원
 
             mailSender.send(mimeMessage);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.info("Email sent to {}", email);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            log.error("Failed to send email to {}: {}", email, e.getMessage());
+            throw new RuntimeException("Failed to send email", e);
         }
     }
 
+    private String buildEmailContent(String code) {
+        return "<h1>이메일 인증 코드</h1>" +
+                "<p>아래 코드를 회원가입 화면에 입력하세요:</p>" +
+                "<h2 style='color: blue;'>" + code + "</h2>";
+    }
+
+    public String generateVerificationCode(String email) {
+        String code = String.valueOf(new Random().nextInt(900000) + 100000); // 6자리 랜덤 숫자
+        verificationCodes.put(email, code);
+        sendVerificationEmail(email, code); // 이메일 발송 로직
+        return code;
+    }
+
+    public boolean verifyCode(String email, String code) {
+        return code.equals(verificationCodes.get(email));
+    }
 
 }
