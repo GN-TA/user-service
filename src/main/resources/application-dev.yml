@@ -17,12 +17,6 @@ spring:
       enabled: true
       path: /h2-console
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      connect-timeout: 6000
-
 chirpstack:
   host: http://192.168.70.203
   port: 8090

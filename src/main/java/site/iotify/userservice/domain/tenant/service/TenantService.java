@@ -1,19 +1,19 @@
 package site.iotify.userservice.domain.tenant.service;
 
 import org.springframework.stereotype.Service;
-import site.iotify.userservice.adaptor.ChirpstackAdaptor;
+import site.iotify.userservice.global.adaptor.ChirpstackAdaptor;
 import site.iotify.userservice.domain.tenant.dto.TenantDto;
 import site.iotify.userservice.domain.tenant.dto.TenantInfo;
 import site.iotify.userservice.domain.tenant.entity.Tenant;
 import site.iotify.userservice.domain.tenant.repository.TenantRepository;
-import site.iotify.userservice.dto.ChirpstackTenantUserDto;
-import site.iotify.userservice.dto.ChirpstackUserDto;
-import site.iotify.userservice.dto.ChirpstackUserInfo;
-import site.iotify.userservice.entity.User;
-import site.iotify.userservice.exception.CreationFailedException;
-import site.iotify.userservice.exception.TenantNotFoundException;
-import site.iotify.userservice.exception.UserNotFoundException;
-import site.iotify.userservice.repository.UserRepository;
+import site.iotify.userservice.domain.user.dto.ChirpstackTenantUserDto;
+import site.iotify.userservice.domain.user.dto.ChirpstackUserDto;
+import site.iotify.userservice.domain.user.dto.ChirpstackUserInfo;
+import site.iotify.userservice.domain.user.entity.User;
+import site.iotify.userservice.global.exception.CreationFailedException;
+import site.iotify.userservice.global.exception.TenantNotFoundException;
+import site.iotify.userservice.global.exception.UserNotFoundException;
+import site.iotify.userservice.domain.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;

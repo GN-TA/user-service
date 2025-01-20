@@ -8,6 +8,7 @@ import site.iotify.userservice.domain.tenant.dto.TenantDto;
 import site.iotify.userservice.domain.tenant.dto.TenantInfo;
 import site.iotify.userservice.domain.tenant.entity.Tenant;
 import site.iotify.userservice.domain.tenant.entity.TenantTag;
+import site.iotify.userservice.global.adaptor.ChirpstackAdaptor;
 
 import java.time.LocalDateTime;
 import java.util.List;
