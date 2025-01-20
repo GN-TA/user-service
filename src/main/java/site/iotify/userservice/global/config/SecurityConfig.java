@@ -24,7 +24,13 @@ public class SecurityConfig {
                 )
                 .formLogin(form -> form.disable())
                 .httpBasic(httpBasic -> httpBasic.disable())
-                .cors(cors -> cors.disable());
+                .cors(cors -> cors.disable())
+                .headers(httpSecurityHeadersConfigurer -> {
+                    httpSecurityHeadersConfigurer.frameOptions(frameOptionsConfig -> {
+                        frameOptionsConfig.disable();
+                    });
+                })
+        ;
 
         return http.build();
     }

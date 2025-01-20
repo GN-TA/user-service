@@ -22,3 +22,7 @@ chirpstack:
   port: 8090
   admin:
     api: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjaGlycHN0YWNrIiwiaXNzIjoiY2hpcnBzdGFjayIsInN1YiI6ImVhZmJmNmE3LWNiM2YtNGE2OC05OGM4LTNkMWU2ODVhZGNjOSIsInR5cCI6ImtleSJ9.FkIF-TRZc7jG4DiqrSwDejfNvnHxb0ynGSJ2uCkkRAk
+
+logging:
+  level:
+    root: info
