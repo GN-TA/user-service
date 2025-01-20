@@ -1,8 +1,8 @@
 package site.iotify.userservice.domain.user.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import site.iotify.userservice.domain.user.dto.ChangePasswordRequest;
 import site.iotify.userservice.domain.user.dto.UserDto;
@@ -13,7 +13,8 @@ import site.iotify.userservice.global.exception.UserNotFoundException;
 import site.iotify.userservice.domain.user.service.EmailVerificationService;
 import site.iotify.userservice.domain.user.service.UserService;
 
-@Controller
+@Slf4j
+@RestController
 public class UserController {
 
     private final UserService userService;
@@ -75,7 +76,6 @@ public class UserController {
      * @throws UserAlreadyExistsException 사용자가 이미 존재할 경우 발생
      */
     @PostMapping("/user")
-    @CrossOrigin(origins = "http://localhost:8080")
     public ResponseEntity<String> registerUser(@RequestBody UserDto userRegistrationRequest) {
         if (userRegistrationRequest.getProvider() == null &&
                 !emailVerificationService.isEmailVerified(userRegistrationRequest.getEmail())) {
@@ -86,6 +86,7 @@ public class UserController {
         } catch (UserAlreadyExistsException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
+        log.info("User {} registered.", userRegistrationRequest.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
