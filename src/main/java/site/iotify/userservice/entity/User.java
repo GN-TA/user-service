@@ -11,10 +11,10 @@ import lombok.*;
 @Builder
 public class User {
 
+
+    private Long id;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     private String email;
 
     private String username;
