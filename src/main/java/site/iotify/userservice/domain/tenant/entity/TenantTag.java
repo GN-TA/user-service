@@ -15,7 +15,10 @@ public class TenantTag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int tagId;
 
+    @Column(name = "tag_key")
     private String key;
+
+    @Column(name = "tag_value")
     private String value;
 
     @ManyToOne(fetch = FetchType.LAZY)

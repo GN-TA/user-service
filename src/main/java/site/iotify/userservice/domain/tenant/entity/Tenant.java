@@ -17,7 +17,6 @@ import java.util.List;
 @ToString
 public class Tenant {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
