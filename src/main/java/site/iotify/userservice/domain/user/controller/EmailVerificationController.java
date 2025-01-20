@@ -2,12 +2,11 @@ package site.iotify.userservice.domain.user.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import site.iotify.userservice.domain.user.service.EmailVerificationService;
 import java.util.Map;
 
-@Controller
+@RestController
 @Slf4j
 public class EmailVerificationController {
 
