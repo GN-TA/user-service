@@ -38,7 +38,7 @@ public class EmailVerificationService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             helper.setTo(email);
             helper.setSubject("이메일 인증 코드");
-            helper.setText(buildEmailContent(token), true); // HTML 내용 지원
+            helper.setText(buildEmailContent(token), true);
 
             mailSender.send(mimeMessage);
             log.info("Email sent to {}", email);
@@ -55,9 +55,9 @@ public class EmailVerificationService {
     }
 
     public String generateVerificationCode(String email) {
-        String code = String.valueOf(new Random().nextInt(900000) + 100000); // 6자리 랜덤 숫자
+        String code = String.valueOf(new Random().nextInt(900000) + 100000);
         verificationCodes.put(email, code);
-        sendVerificationEmail(email, code); // 이메일 발송 로직
+        sendVerificationEmail(email, code);
         return code;
     }
 
