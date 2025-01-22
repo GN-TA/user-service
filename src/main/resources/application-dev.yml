@@ -19,7 +19,6 @@ spring:
       settings:
         web-allow-others: true
 
-
 chirpstack:
   host: http://192.168.70.203
   port: 8090
