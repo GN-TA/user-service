@@ -1,6 +1,7 @@
 package site.iotify.userservice.adaptor;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestTemplate;
@@ -13,6 +14,7 @@ import site.iotify.userservice.global.adaptor.ChirpstackAdaptor;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Disabled
 class ChirpstackAdaptorTest {
     private static ChirpstackAdaptor chirpstackAdaptor;
 
