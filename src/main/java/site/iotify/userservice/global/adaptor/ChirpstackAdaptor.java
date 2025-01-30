@@ -11,10 +11,13 @@ import site.iotify.userservice.domain.tenant.dto.TenantDto;
 import site.iotify.userservice.domain.tenant.dto.TenantInfo;
 import site.iotify.userservice.domain.user.dto.ChirpstackTenantUserDto;
 import site.iotify.userservice.domain.user.dto.ChirpstackUserDto;
-import site.iotify.userservice.global.interceptor.LoggingInterceptor;
+import site.iotify.userservice.domain.user.dto.response.ChirpstackUserListResponse;
+import site.iotify.userservice.domain.user.dto.request.ChirpstackCreateUserRequestDto;
+import site.iotify.userservice.global.exception.TenantNotFoundException;
 import site.iotify.userservice.global.util.HttpEntityFactory;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @Component
@@ -24,14 +27,11 @@ public class ChirpstackAdaptor {
     // 필드 의존성 주입, 생성자 주입으로 전환 고려 필요
     @Value("${chirpstack.host}")
     private String host;
-    @Value("${chirpstack.port}")
-    private int port;
     @Value("${chirpstack.admin.api}")
     private String key;
 
     public ChirpstackAdaptor(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
-        this.restTemplate.getInterceptors().add(new LoggingInterceptor());
     }
 
     /**
@@ -50,7 +50,6 @@ public class ChirpstackAdaptor {
                 .build();
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(host)
-                .port(port)
                 .path("/api/tenants")
                 .queryParam("limit", limit)
                 .queryParam("offset", offset)
@@ -73,18 +72,20 @@ public class ChirpstackAdaptor {
                 .body(tenantDto)
                 .build();
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(host)
-                .port(port)
                 .path("/api/tenants");
 
-        ResponseEntity<String> exchange = restTemplate.exchange(
+        ResponseEntity<Map<String, String>> exchange = restTemplate.exchange(
                 uriComponentsBuilder.toUriString(),
                 HttpMethod.POST,
                 httpRequest,
-                new ParameterizedTypeReference<String>() {
+                new ParameterizedTypeReference<Map<String, String>>() {
                 }
         );
-
-        return exchange.getBody();
+        Map<String, String> responseMap = exchange.getBody();
+        if (responseMap == null) {
+            throw new TenantNotFoundException(String.format("it couldn't save the Tenant : %s", tenantDto.getTenant().getId()));
+        }
+        return responseMap.get("id");
     }
 
     public TenantDto getTenant(String id) {
@@ -93,7 +94,6 @@ public class ChirpstackAdaptor {
                 .setBearerAuth(key)
                 .build();
         UriComponentsBuilder uriComponentBuilder = UriComponentsBuilder.fromHttpUrl(host)
-                .port(port)
                 .path(String.format("/api/tenants/%s", id));
         ResponseEntity<TenantDto> tenantDto = restTemplate.exchange(
                 uriComponentBuilder.toUriString(),
@@ -113,7 +113,6 @@ public class ChirpstackAdaptor {
                 .build();
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(host)
-                .port(port)
                 .path(String.format("/api/tenants/%s", tenantDto.getTenant().getId()));
 
         restTemplate.exchange(uriComponentsBuilder.toUriString(),
@@ -128,7 +127,6 @@ public class ChirpstackAdaptor {
                 .contentType(MediaType.APPLICATION_JSON)
                 .build();
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(host)
-                .port(port)
                 .path(String.format("/api/users/%s", id));
 
         ResponseEntity<ChirpstackUserDto> response = restTemplate.exchange(
@@ -149,7 +147,6 @@ public class ChirpstackAdaptor {
                 .build();
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(host)
-                .port(port)
                 .path(String.format("/api/tenants/%s/users", chirpstackTenantUserDto.getTenantId()));
 
         restTemplate.exchange(
@@ -158,4 +155,55 @@ public class ChirpstackAdaptor {
                 httpEntity,
                 Void.class);
     }
+
+    public ChirpstackUserListResponse getUsersInNetwork(String ip, int limit, int offset) {
+        String targetHost = host;
+        if (ip != null) {
+            targetHost = ip;
+        }
+
+        HttpEntity<Void> httpEntity = HttpEntityFactory.<Void>builder()
+                .contentType(MediaType.APPLICATION_JSON)
+                .setBearerAuth(key)
+                .build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder
+                .fromHttpUrl(targetHost)
+                .path("/api/users")
+                .queryParam("limit", limit)
+                .queryParam("offset", offset);
+
+        ResponseEntity<ChirpstackUserListResponse> response = restTemplate.exchange(uriComponentsBuilder.toUriString(),
+                HttpMethod.GET,
+                httpEntity,
+                new ParameterizedTypeReference<ChirpstackUserListResponse>() {
+                });
+        return response.getBody();
+    }
+
+    public String addUsersInNetwork(String ip, ChirpstackCreateUserRequestDto chirpstackCreateUserRequestDto) {
+        String targetHost = host;
+        if (ip != null) {
+            targetHost = ip;
+        }
+
+        HttpEntity<ChirpstackCreateUserRequestDto> httpEntity = HttpEntityFactory.<ChirpstackCreateUserRequestDto>builder()
+                .contentType(MediaType.APPLICATION_JSON)
+                .setBearerAuth(key)
+                .body(chirpstackCreateUserRequestDto)
+                .build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder
+                .fromHttpUrl(targetHost)
+                .path("/api/users");
+        ResponseEntity<Map<String, String>> response = restTemplate.exchange(uriComponentsBuilder.toUriString(),
+                HttpMethod.POST,
+                httpEntity,
+                new ParameterizedTypeReference<Map<String, String>>() {
+                });
+
+        return Objects.requireNonNull(response.getBody()).get("id");
+    }
+
+
 }

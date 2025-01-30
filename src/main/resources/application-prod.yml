@@ -1,5 +1,4 @@
 chirpstack:
   host: ${CHIRPSTACK_IP}
-  port: ${CHIRPSTACK_PORT}
   admin:
     api: ${CHIRPSTACK_API_KEY}

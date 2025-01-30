@@ -29,10 +29,7 @@ public class TenantController {
     @PostMapping("/tenants")
     public ResponseEntity<String> createTenant(@RequestHeader("X-USER-ID") String userId,
                                                @RequestBody TenantInfo tenantInfo) {
-        TenantInfo createdTenant = tenantService.registerTenant(tenantInfo);
-        tenantService.addAdminUserInTenant(userId, createdTenant.getId());
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdTenant.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(tenantService.registerTenant(tenantInfo, userId).getId());
     }
 
 }

@@ -48,7 +48,7 @@ class ChirpstackAdaptorTest {
                 .ip("asdfasdf")
                 .build();
         tenant.setTags(List.of(new TenantTag(0, "asdf", "asdf", tenant)));
-        TenantDto tenantDto = new TenantDto(TenantInfo.getDto(tenant), LocalDateTime.now(), LocalDateTime.now());
+        TenantDto tenantDto = new TenantDto(TenantInfo.toDto(tenant), LocalDateTime.now(), LocalDateTime.now());
         String tenantId = chirpstackAdaptor.createTenant(tenantDto);
 
         System.out.println(tenantId);

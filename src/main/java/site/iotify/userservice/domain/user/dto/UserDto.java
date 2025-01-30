@@ -9,7 +9,8 @@ import site.iotify.userservice.domain.user.entity.User;
 @Getter
 public class UserDto {
 
-    private Long id;
+    @Setter
+    private String id;
 
     @NotBlank
     private String email;
@@ -18,7 +19,6 @@ public class UserDto {
     private String username;
 
     @Setter
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Setter

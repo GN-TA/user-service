@@ -9,6 +9,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class TenantInfo {
     private String id;
@@ -22,7 +23,7 @@ public class TenantInfo {
     private String ip;
     private Map<String, String> tags;
 
-    public static Tenant getEntity(TenantInfo tenantInfo) {
+    public static Tenant toEntity(TenantInfo tenantInfo) {
         Tenant tenant = Tenant.builder()
                 .id(tenantInfo.getId())
                 .name(tenantInfo.getName())
@@ -33,7 +34,7 @@ public class TenantInfo {
                 .maxDeviceCount(tenantInfo.getMaxDeviceCount())
                 .ip(tenantInfo.getIp())
                 .build();
-        if (!tenantInfo.getTags().isEmpty()) {
+        if (tenantInfo.getTags() != null && !tenantInfo.getTags().isEmpty()) {
             tenant.setTags(
                     tenantInfo.getTags()
                             .entrySet()
@@ -45,20 +46,24 @@ public class TenantInfo {
         return tenant;
     }
 
-    public static TenantInfo getDto(Tenant tenant) {
-        return new TenantInfo(
-                tenant.getId(),
-                tenant.getName(),
-                tenant.getDescription(),
-                tenant.isCanHaveGateway(),
-                tenant.isPrivateGatewaysUp(),
-                tenant.isPrivateGatewaysDown(),
-                tenant.getMaxGatewayCount(),
-                tenant.getMaxDeviceCount(),
-                tenant.getIp(),
-                tenant.getTags().stream()
-                        .collect(Collectors.toMap(TenantTag::getKey, TenantTag::getValue))
-        );
+    public static TenantInfo toDto(Tenant tenant) {
+        TenantInfo tenantInfo = new TenantInfo();
+
+        tenantInfo.setId(tenant.getId());
+        tenantInfo.setName(tenant.getName());
+        tenantInfo.setDescription(tenant.getDescription());
+        tenantInfo.setCanHaveGateways(tenant.isCanHaveGateway());
+        tenantInfo.setPrivateGatewaysUp(tenant.isPrivateGatewaysUp());
+        tenantInfo.setPrivateGatewaysDown(tenant.isPrivateGatewaysDown());
+        tenantInfo.setMaxGatewayCount(tenant.getMaxGatewayCount());
+        tenantInfo.setMaxDeviceCount(tenant.getMaxDeviceCount());
+        tenantInfo.setIp(tenant.getIp());
+
+        if (tenant.getTags() != null) {
+            tenantInfo.setTags(tenant.getTags().stream()
+                    .collect(Collectors.toMap(TenantTag::getKey, TenantTag::getValue)));
+        }
+        return tenantInfo;
     }
 
     @Override

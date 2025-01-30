@@ -3,7 +3,7 @@ spring:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
-    password: 1234
+    password:
   jpa:
     hibernate:
       ddl-auto: create
@@ -20,8 +20,7 @@ spring:
         web-allow-others: true
 
 chirpstack:
-  host: http://192.168.70.203
-  port: 8090
+  host: https://1d1c-112-216-11-34.ngrok-free.app
   admin:
     api: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjaGlycHN0YWNrIiwiaXNzIjoiY2hpcnBzdGFjayIsInN1YiI6ImVhZmJmNmE3LWNiM2YtNGE2OC05OGM4LTNkMWU2ODVhZGNjOSIsInR5cCI6ImtleSJ9.FkIF-TRZc7jG4DiqrSwDejfNvnHxb0ynGSJ2uCkkRAk
 
