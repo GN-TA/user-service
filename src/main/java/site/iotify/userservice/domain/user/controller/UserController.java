@@ -35,8 +35,8 @@ public class UserController {
      * @return 사용자의 정보를 담은 {@link UserDto}를 포함한 {@link ResponseEntity}
      * @throws UserNotFoundException 주어진 ID를 가진 사용자가 존재하지 않을 경우 발생
      */
-    @GetMapping("/user/{id}")
-    public ResponseEntity<UserDto> fetchUserById(@PathVariable String id) {
+    @GetMapping("/v1/user")
+    public ResponseEntity<UserDto> fetchUserById(@RequestHeader("X-USER-ID") String id) {
         UserDto userDto = userService.loadUserById(id);
         if (userDto == null) {
             throw new UserNotFoundException(id);
