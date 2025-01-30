@@ -2,10 +2,13 @@ package site.iotify.userservice.domain.user.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import site.iotify.userservice.domain.user.dto.ChirpstackUserInfo;
+import site.iotify.userservice.domain.user.dto.request.ChirpstackCreateUserRequestDto;
 import site.iotify.userservice.domain.user.repository.UserRepository;
 import site.iotify.userservice.domain.user.dto.ChangePasswordRequest;
 import site.iotify.userservice.domain.user.dto.UserDto;
 import site.iotify.userservice.domain.user.entity.User;
+import site.iotify.userservice.global.adaptor.ChirpstackAdaptor;
 import site.iotify.userservice.global.exception.UnAuthenticatedException;
 import site.iotify.userservice.global.exception.UnAuthorizedException;
 import site.iotify.userservice.global.exception.UserAlreadyExistsException;
@@ -14,12 +17,14 @@ import site.iotify.userservice.global.exception.UserNotFoundException;
 @Service
 public class UserService {
 
+    private final ChirpstackAdaptor chirpstackAdaptor;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ChirpstackAdaptor chirpstackAdaptor) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.chirpstackAdaptor = chirpstackAdaptor;
     }
 
     /**
@@ -65,6 +70,22 @@ public class UserService {
         if (user != null) {
             throw new UserAlreadyExistsException(user.getEmail());
         }
+        ChirpstackUserInfo chirpstackUserInfo = ChirpstackUserInfo.builder()
+                .id(userDto.getEmail())
+                .email(userDto.getEmail())
+                .isAdmin(false)
+                .isActive(true)
+                .build();
+
+        String chirpstackUserId = chirpstackAdaptor.addUsersInNetwork(null,
+                new ChirpstackCreateUserRequestDto(
+                        chirpstackUserInfo,
+                        userDto.getPassword(),
+                        null
+                )
+        );
+        userDto.setId(chirpstackUserId);
+
         String encodedPassword = passwordEncoder.encode(userDto.getPassword());
         userDto.setPassword(encodedPassword);
         userDto.setAuth("ROLE_USER");

@@ -2,6 +2,7 @@ package site.iotify.userservice.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.validator.constraints.UniqueElements;
 
 @Entity
 @Table(name = "users")
@@ -11,10 +12,11 @@ import lombok.*;
 @Builder
 public class User {
 
-    private Long id;
+    @Column(name = "email", unique = true, nullable = false)
+    private String email;
 
     @Id
-    private String email;
+    private String id;
 
     private String username;
 

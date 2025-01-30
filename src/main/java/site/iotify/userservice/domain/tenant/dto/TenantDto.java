@@ -6,6 +6,7 @@ import site.iotify.userservice.domain.tenant.entity.Tenant;
 import site.iotify.userservice.domain.tenant.entity.TenantTag;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Data
@@ -16,6 +17,9 @@ public class TenantDto {
     private LocalDateTime updatedAt;
 
     public static TenantDto toDto(Tenant tenant) {
+        if (tenant.getTags() == null) {
+            tenant.setTags(new ArrayList<>());
+        }
         return new TenantDto(new TenantInfo(
                 tenant.getId(),
                 tenant.getName(),
