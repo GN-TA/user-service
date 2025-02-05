@@ -55,6 +55,7 @@ public class ChirpstackAdaptor {
                 .queryParam("offset", offset)
                 .queryParam("search", search)
                 .queryParam("userId", userId);
+
         ResponseEntity<ChirpstackTenantListResponse> exchange = restTemplate.exchange(
                 uriComponentsBuilder.toUriString(),
                 HttpMethod.GET,
@@ -95,6 +96,8 @@ public class ChirpstackAdaptor {
                 .build();
         UriComponentsBuilder uriComponentBuilder = UriComponentsBuilder.fromHttpUrl(host)
                 .path(String.format("/api/tenants/%s", id));
+        restTemplate.getForEntity(uriComponentBuilder.toUriString(),
+                TenantDto.class);
         ResponseEntity<TenantDto> tenantDto = restTemplate.exchange(
                 uriComponentBuilder.toUriString(),
                 HttpMethod.GET,
@@ -186,6 +189,7 @@ public class ChirpstackAdaptor {
         if (ip != null) {
             targetHost = ip;
         }
+        chirpstackCreateUserRequestDto.getUser().setAdmin(false);
 
         HttpEntity<ChirpstackCreateUserRequestDto> httpEntity = HttpEntityFactory.<ChirpstackCreateUserRequestDto>builder()
                 .contentType(MediaType.APPLICATION_JSON)

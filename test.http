@@ -27,7 +27,7 @@ Content-Type: application/json
 }
 
 ### 유저 단일 조회
-GET localhost:8092/user/e4cb2550-d93c-4627-968d-fdfd113da28d
+GET localhost:8092/user?email=test@test.com
 Content-Type: application/json
 
 
