@@ -86,6 +86,11 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           port: ${{ secrets.SERVER_PORT }}
           script: |
+            export DB_HOST=${{ secrets.DB_HOST }}
+            export DB_USERNAME=${{ secrets.DB_USERNAME }}
+            export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            export CHIRPSTACK_HOST=${{ secrets.CHIRPSTACK_HOST }}
+            export CHIRPSTACK_API_KEY=${{ secrets.CHIRPSTACK_API_KEY }}
             export DOCKER_IMAGE=codethestudent/iot-user-service:latest
             cd docker-compose
             git config credential.helper store
