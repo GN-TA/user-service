@@ -2,10 +2,12 @@ package site.iotify.userservice.domain.rule.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import site.iotify.userservice.domain.rule.entity.Rule;
 
-@AllArgsConstructor
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class RuleResponseDto {
     public int id;
     public String tenantId;

@@ -1,4 +1,23 @@
+spring:
+  datasource:
+    url: ${DB_HOST}
+    driver-class-name: com.mysql.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+
 chirpstack:
-  host: ${CHIRPSTACK_IP}
+  host: ${CHIRPSTACK_HOST}
   admin:
     api: ${CHIRPSTACK_API_KEY}
+
+logging:
+  level:
+    root: warn

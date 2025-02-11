@@ -38,7 +38,9 @@ public class UserService {
      */
     public UserDto loadUserById(String id) {
         User user = userRepository.findById(id).orElse(null);
-        return new UserDto().fromEntity(user);
+        UserDto userDto = new UserDto().fromEntity(user);
+        userDto.setPassword(null);
+        return userDto;
     }
 
     /**

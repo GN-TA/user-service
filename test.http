@@ -5,7 +5,7 @@ Content-Type: application/json
 X-USER-ID: e4cb2550-d93c-4627-968d-fdfd113da28d
 
 {
-  "name": "test1",
+  "name": "test new",
   "description": "most pleasure tenant",
   "canHaveGateway": true,
   "privateGatewayUp": false,
