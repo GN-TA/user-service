@@ -9,7 +9,7 @@ name: Java CI/CD with Gradle
 
 on:
   push:
-    branches: [ "main", "develop" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
 
@@ -81,7 +81,7 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          # port: 22
+          port: ${{ secrets.SERVER_PORT }}
           script: |
             cd docker-compose
             git config credential.helper store
