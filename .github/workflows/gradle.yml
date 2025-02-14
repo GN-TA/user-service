@@ -91,6 +91,11 @@ jobs:
             export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             export CHIRPSTACK_HOST=${{ secrets.CHIRPSTACK_HOST }}
             export CHIRPSTACK_API_KEY=${{ secrets.CHIRPSTACK_API_KEY }}
+            export PUBLIC_KEY=${{ secrets.PUBLIC_KEY }}
+            export PRIVATE_KEY=${{ secrets.PRIVATE_KEY }}
+            export REDIS_HOST=${{ secrets.REDIS_HOST }}
+            export REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+            export REDIS_PORT=${{ secrets.REDIS_PORT }}
             export DOCKER_IMAGE=codethestudent/iot-user-service:latest
             cd docker-compose
             git config credential.helper store
