@@ -89,6 +89,7 @@ jobs:
             export DB_HOST=${{ secrets.DB_HOST }}
             export DB_USERNAME=${{ secrets.DB_USERNAME }}
             export DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            export DB_PORT=${{ secrets.DB_PORT }}
             export CHIRPSTACK_HOST=${{ secrets.CHIRPSTACK_HOST }}
             export CHIRPSTACK_API_KEY=${{ secrets.CHIRPSTACK_API_KEY }}
             export PUBLIC_KEY=${{ secrets.PUBLIC_KEY }}
