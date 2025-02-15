@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/iot_iotify
-    driver-class-name: com.mysql.jdbc.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
   jpa:
