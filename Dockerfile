@@ -23,8 +23,8 @@ WORKDIR /app
 # 빌드 스테이지에서 생성된 jar 파일 복사
 COPY --from=build /app/build/libs/*SNAPSHOT.jar userservice.jar
 
-# 포트 8092 열기
-EXPOSE 8092
+# 포트 8080 열기
+EXPOSE 8080
 
 # 환경 변수를 런타임 이미지에 설정
 ENV SPRING_PROFILES_ACTIVE=prod
