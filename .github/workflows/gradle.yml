@@ -98,12 +98,14 @@ jobs:
             export REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
             export REDIS_PORT=${{ secrets.REDIS_PORT }}
             export DOCKER_IMAGE=codethestudent/iot-user-service:latest
+            
             cd docker-compose
             git config credential.helper store
             git pull https://${{ secrets.GIT_USER }}:${{ secrets.GIT_PASS }}@github.com/GN-TA/docker-compose.git main
+            
             docker pull $DOCKER_IMAGE
-            docker compose down
-            docker compose up -d
+            docker compose pull user-service
+            docker compose up -d user-service
 
 
   dependency-submission:
