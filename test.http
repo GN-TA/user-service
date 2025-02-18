@@ -1,0 +1,37 @@
+
+### 조직 등록
+POST localhost:8092/v1/tenants
+Content-Type: application/json
+X-USER-ID: e4cb2550-d93c-4627-968d-fdfd113da28d
+
+{
+  "name": "test new",
+  "description": "most pleasure tenant",
+  "canHaveGateway": true,
+  "privateGatewayUp": false,
+  "privateGatewayDown": false,
+  "maxGatewayCount": 0,
+  "maxDeviceCount": 0,
+  "ip": "111.111.111.111"
+}
+
+### 회원가입
+POST localhost:8092/user
+Content-Type: application/json
+
+{
+  "email": "asdf@micro.com",
+  "username": "asdf",
+  "password": "asdf",
+  "provider": "google"
+}
+
+### 유저 단일 조회
+GET localhost:8092/user?email=test@test.com
+Content-Type: application/json
+
+
+### 사용자가 속한 조직 리스트 조회
+GET localhost:8092/v1/tenants
+Content-Type: application/json
+X-USER-ID: e4cb2550-d93c-4627-968d-fdfd113da28d
