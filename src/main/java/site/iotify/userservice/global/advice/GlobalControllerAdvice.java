@@ -10,6 +10,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientResponseException;
 import site.iotify.userservice.domain.gateway.exception.GatewayApiException;
+import site.iotify.userservice.domain.rule.exception.NodeRedException;
 import site.iotify.userservice.global.exception.UnAuthenticatedException;
 import site.iotify.userservice.global.exception.UnAuthorizedException;
 import site.iotify.userservice.global.exception.UserNotFoundException;
@@ -52,5 +53,11 @@ public class GlobalControllerAdvice {
     public ResponseEntity<String> handleRestTemplateException(RestClientResponseException e) {
         log.error(e.getMessage(), e);
         return new ResponseEntity<>(e.getResponseBodyAsString(), e.getStatusCode());
+    }
+
+    @ExceptionHandler(NodeRedException.class)
+    public ResponseEntity<String> handleNodeRedCreateException(NodeRedException e) {
+        log.error(e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 }

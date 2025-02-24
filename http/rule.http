@@ -1,0 +1,5 @@
+### GET
+GET http://localhost:8092/rule?tenantId=395fe3ef-bbce-4ee3-bba8-8488cfa8f6ac
+
+### REMOVE
+DELETE http://localhost:8092/rule/395fe3ef-bbce-4ee3-bba8-8488cfa8f6ac
