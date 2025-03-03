@@ -66,6 +66,25 @@ public class ChirpstackAdaptor {
         return Objects.requireNonNull(exchange.getBody()).getResult();
     }
 
+    public int getTenantTotalCount() {
+        HttpEntity<Void> httpRequest = HttpEntityFactory.<Void>builder()
+                .contentType(MediaType.APPLICATION_JSON)
+                .setBearerAuth(key)
+                .build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(host)
+                .path("/api/tenants");
+
+        ResponseEntity<ChirpstackTenantListResponse> exchange = restTemplate.exchange(
+                uriComponentsBuilder.toUriString(),
+                HttpMethod.GET,
+                httpRequest,
+                new ParameterizedTypeReference<ChirpstackTenantListResponse>() {
+                });
+
+        return Objects.requireNonNull(exchange.getBody()).getTotalCount();
+    }
+
     public String createTenant(TenantDto tenantDto) {
         HttpEntity<TenantDto> httpRequest = HttpEntityFactory.<TenantDto>builder()
                 .contentType(MediaType.APPLICATION_JSON)

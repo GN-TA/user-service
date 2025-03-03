@@ -2,25 +2,28 @@ package site.iotify.userservice.domain.rule.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import site.iotify.userservice.domain.rule.dto.request.RuleRequestDto;
 import site.iotify.userservice.domain.rule.dto.response.RuleResponseDto;
 import site.iotify.userservice.domain.rule.service.RuleService;
 
-import java.util.List;
 
-@RequestMapping("/rule")
+@RequestMapping("/v1/rule")
 @RestController
 @RequiredArgsConstructor
 public class RuleController {
     private final RuleService ruleService;
 
-    @PostMapping
-    public void registerRule(@RequestBody RuleRequestDto ruleRequestDto) {
-        ruleService.saveRule(ruleRequestDto);
-    }
+//    @PostMapping
+//    public void createRule(@RequestBody RuleRequestDto ruleRequestDto) {
+//        ruleService.createRule(ruleRequestDto);
+//    }
 
     @GetMapping
-    public List<RuleResponseDto> getRules(@RequestParam String tenantId) {
+    public RuleResponseDto getRules(@RequestParam String tenantId) {
         return ruleService.getRule(tenantId);
+    }
+
+    @DeleteMapping("/{tenantId}")
+    public void removeRule(@PathVariable String tenantId) {
+        ruleService.removeRule(tenantId);
     }
 }
