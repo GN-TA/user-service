@@ -29,4 +29,4 @@ chirpstack:
 
 logging:
   level:
-    root: warn
+    root: debug
