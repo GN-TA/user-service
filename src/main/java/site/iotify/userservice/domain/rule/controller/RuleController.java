@@ -2,13 +2,11 @@ package site.iotify.userservice.domain.rule.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import site.iotify.userservice.domain.rule.dto.request.RuleRequestDto;
 import site.iotify.userservice.domain.rule.dto.response.RuleResponseDto;
 import site.iotify.userservice.domain.rule.service.RuleService;
 
-import java.util.List;
 
-@RequestMapping("/rule")
+@RequestMapping("/v1/rule")
 @RestController
 @RequiredArgsConstructor
 public class RuleController {

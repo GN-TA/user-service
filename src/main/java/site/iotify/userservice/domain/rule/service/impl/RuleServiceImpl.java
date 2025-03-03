@@ -6,7 +6,6 @@ import site.iotify.userservice.domain.rule.dto.request.RuleRequestDto;
 import site.iotify.userservice.domain.rule.dto.response.RuleResponseDto;
 import site.iotify.userservice.domain.rule.exception.NodeRedException;
 import site.iotify.userservice.domain.rule.service.RuleService;
-import site.iotify.userservice.domain.tenant.repository.TenantRepository;
 import site.iotify.userservice.global.adaptor.ChirpstackAdaptor;
 
 import java.io.BufferedReader;
@@ -19,8 +18,7 @@ public class RuleServiceImpl implements RuleService {
 
     private RuleResponseDto createRule(RuleRequestDto ruleRequestDto) {
         String tenantId = ruleRequestDto.getTenantId();
-        int tenantCount = chirpstackAdaptor.getTenantTotalCount();
-        int port = 18000 + tenantCount;
+        int port = 18000 + Math.abs(tenantId.hashCode() % 55536);
         try {
             ProcessBuilder processBuilder = new ProcessBuilder(
                     "docker", "run", "-d",
