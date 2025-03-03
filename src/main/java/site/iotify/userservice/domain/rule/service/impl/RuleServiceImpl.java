@@ -23,6 +23,7 @@ public class RuleServiceImpl implements RuleService {
             ProcessBuilder processBuilder = new ProcessBuilder(
                     "docker", "run", "-d",
                     "--name", tenantId, "-p", port + ":1880",
+                    "--network", "my-network",
                     "nodered/node-red"
             );
             processBuilder.start();
