@@ -23,9 +23,9 @@ spring:
         web-allow-others: true
 
 chirpstack:
-  host: http://192.168.70.203:8090/
+  host:
   admin:
-    api: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjaGlycHN0YWNrIiwiaXNzIjoiY2hpcnBzdGFjayIsInN1YiI6ImVhZmJmNmE3LWNiM2YtNGE2OC05OGM4LTNkMWU2ODVhZGNjOSIsInR5cCI6ImtleSJ9.FkIF-TRZc7jG4DiqrSwDejfNvnHxb0ynGSJ2uCkkRAk
+    api:
 
 logging:
   level:
