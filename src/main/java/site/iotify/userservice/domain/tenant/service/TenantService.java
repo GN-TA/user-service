@@ -2,9 +2,8 @@ package site.iotify.userservice.domain.tenant.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import site.iotify.userservice.domain.tenant.dto.TenantDto;
-import site.iotify.userservice.domain.tenant.dto.TenantInfo;
-import site.iotify.userservice.domain.tenant.entity.Tenant;
+import site.iotify.userservice.domain.tenant.dto.TenantRequestDto;
+import site.iotify.userservice.domain.tenant.dto.TenantResponseDto;
 import site.iotify.userservice.domain.user.dto.ChirpstackTenantUserDto;
 import site.iotify.userservice.domain.user.dto.ChirpstackUserDto;
 import site.iotify.userservice.domain.user.dto.ChirpstackUserInfo;
@@ -38,12 +37,12 @@ public class TenantService {
      * @param userId
      * @return
      */
-    public TenantInfo registerTenant(TenantInfo tenantInfo, String userId) {
+    public String registerTenant(TenantRequestDto.TenantCreate tenantInfo, String userId) {
         if (!userRepository.existsById(userId)) {
             throw new UserNotFoundException(String.format("userId %s not found", userId));
         }
         String tenantId = chirpstackAdaptor.createTenant(
-                new TenantDto(tenantInfo, LocalDateTime.now(), LocalDateTime.now())
+                new TenantRequestDto.ChirpstackTenantCreate(tenantInfo, LocalDateTime.now(), LocalDateTime.now())
         );
         if (Objects.isNull(tenantId)) {
             throw new CreationFailedException();
@@ -51,7 +50,7 @@ public class TenantService {
         tenantInfo.setId(tenantId);
         addUserInTenant(userId, tenantId, true);
 
-        return tenantInfo;
+        return tenantId;
     }
 
     /**
@@ -60,13 +59,13 @@ public class TenantService {
      * ids가 null이면 전체 조직을 반환합니다.
      *
      * @param ids
-     * @return List<TenantInfo>
+     * @return List<TenantResponseDto.TenantGet>
      */
-    public List<TenantInfo> getTenants(List<String> ids) {
-        Map<String, TenantInfo> tenantInfoMap = chirpstackAdaptor
+    public List<TenantResponseDto.TenantGet> getTenants(List<String> ids) {
+        Map<String, TenantResponseDto.TenantGet> tenantInfoMap = chirpstackAdaptor
                 .getTenants(Integer.MAX_VALUE, 0, null, null)
                 .stream()
-                .collect(Collectors.toMap(TenantInfo::getId, tenantInfo -> tenantInfo));
+                .collect(Collectors.toMap(TenantResponseDto.TenantGet::getId, tenantGet -> tenantGet));
         if (ids != null) {
             return tenantInfoMap.values().stream()
                     .filter(tenantInfo -> ids.contains(tenantInfo.getId()))
@@ -82,7 +81,7 @@ public class TenantService {
      * @param userId
      * @return
      */
-    public List<TenantInfo> getTenantsByUser(String userId) {
+    public List<TenantResponseDto.TenantGet> getTenantsByUser(String userId) {
         ChirpstackUserDto user = chirpstackAdaptor.getUser(userId);
         if (Objects.isNull(user)) {
             throw new UserNotFoundException(String.format("user {%s} not found in chirpstack DB", userId));
@@ -96,9 +95,9 @@ public class TenantService {
      * @param tenantInfo
      * @return
      */
-    public void updateTenant(TenantInfo tenantInfo) {
-        Tenant tenant = TenantDto.toEntity(chirpstackAdaptor.getTenant(tenantInfo.getId()));
-        chirpstackAdaptor.updateTenant(new TenantDto(tenantInfo, tenant.getCreatedAt(), LocalDateTime.now()));
+    public void updateTenant(TenantRequestDto.TenantCreate tenantDto) {
+        TenantResponseDto.TenantGetWrapped tenantGetWrapped = chirpstackAdaptor.getTenant(tenantDto.getId());
+        chirpstackAdaptor.updateTenant(new TenantRequestDto.ChirpstackTenantCreate(tenantDto, tenantGetWrapped.getCreatedAt(), LocalDateTime.now()));
     }
 
     /**
@@ -123,5 +122,16 @@ public class TenantService {
                         true,
                         true
                 ), tenantId));
+    }
+
+    /**
+     * 단일 조직 정보를 가져오는 서비스
+     *
+     * @param tenantId
+     * @return
+     */
+    public TenantResponseDto.TenantGet getTenant(String tenantId) {
+        TenantResponseDto.TenantGetWrapped tenantDto = chirpstackAdaptor.getTenant(tenantId);
+        return tenantDto.getTenant();
     }
 }
