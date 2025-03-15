@@ -1,6 +1,8 @@
 package site.iotify.userservice.domain.tenant.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +35,8 @@ public class TenantController {
     }
 
     @GetMapping("/tenant/{tenant-id}")
-    public ResponseEntity<TenantResponseDto.TenantGet> getTenant(@PathVariable("tenant-id") String tenantId) {
-        return ResponseEntity.status(HttpStatus.OK).body(tenantService.getTenant(tenantId));
+    public ResponseEntity<TenantResponseDto.TenantWithUsersGet> getTenant(@PathVariable("tenant-id") String tenantId,
+                                                                          @PageableDefault Pageable pageable) {
+        return ResponseEntity.status(HttpStatus.OK).body(tenantService.getTenant(tenantId, pageable));
     }
 }

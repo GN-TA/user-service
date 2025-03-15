@@ -1,6 +1,7 @@
 package site.iotify.userservice.domain.tenant.service;
 
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import site.iotify.userservice.domain.tenant.dto.TenantRequestDto;
 import site.iotify.userservice.domain.tenant.dto.TenantResponseDto;
@@ -130,8 +131,14 @@ public class TenantService {
      * @param tenantId
      * @return
      */
-    public TenantResponseDto.TenantGet getTenant(String tenantId) {
-        TenantResponseDto.TenantGetWrapped tenantDto = chirpstackAdaptor.getTenant(tenantId);
-        return tenantDto.getTenant();
+    public TenantResponseDto.TenantWithUsersGet getTenant(String tenantId, Pageable pageable) {
+        TenantResponseDto.TenantGetWrapped tenantGetWrapped = chirpstackAdaptor.getTenant(tenantId);
+
+        int offset = pageable.getPageNumber() == 0 ? 0 : pageable.getPageNumber() * pageable.getPageSize() - pageable.getPageSize();
+        int limit = pageable.getPageNumber() == 0 ? pageable.getPageSize() : pageable.getPageSize() * pageable.getPageNumber();
+
+        TenantResponseDto.TenantUsersGet tenantUsersGet = chirpstackAdaptor.getTenantUsers(limit, offset, tenantId);
+
+        return new TenantResponseDto.TenantWithUsersGet(tenantGetWrapped, tenantUsersGet);
     }
 }
