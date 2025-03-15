@@ -226,5 +226,27 @@ public class ChirpstackAdaptor {
         return Objects.requireNonNull(response.getBody()).get("id");
     }
 
+    public TenantResponseDto.TenantUsersGet getTenantUsers(int limit, int offset, String tenantId) {
+        HttpEntity<Void> httpEntity = HttpEntityFactory.<Void>builder()
+                .contentType(MediaType.APPLICATION_JSON)
+                .setBearerAuth(key)
+                .build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder
+                .fromHttpUrl(host)
+                .path("/api/tenants/{tenantId}/users")
+                .queryParam("limit", limit)
+                .queryParam("offset", offset);
+
+        String url = uriComponentsBuilder.buildAndExpand(tenantId).toUriString();
+        ResponseEntity<TenantResponseDto.TenantUsersGet> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                httpEntity,
+                new ParameterizedTypeReference<TenantResponseDto.TenantUsersGet>() {
+                });
+
+        return response.getBody();
+    }
 
 }
