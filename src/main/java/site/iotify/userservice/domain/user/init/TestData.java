@@ -20,7 +20,6 @@ public class TestData {
     public void loadTestData() {
         User user = new User("test@test.com", "e4cb2550-d93c-4627-968d-fdfd113da28d", "test",
                 passwordEncoder.encode("123"), "ADMIN", "");
-
         userRepository.save(user);
         System.out.println("Test users added successfully!");
     }

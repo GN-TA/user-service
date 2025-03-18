@@ -35,3 +35,8 @@ Content-Type: application/json
 GET localhost:8092/v1/tenants
 Content-Type: application/json
 X-USER-ID: e4cb2550-d93c-4627-968d-fdfd113da28d
+
+### one tenant test
+GET localhost:8092/v1/tenant/4b81666b-acca-451a-9a52-cecb931f1f7d?page=0&size=3
+Content-Type: application/json
+X-USER-ID: 05244f12-6daf-4e1f-8315-c66783a0ab56
