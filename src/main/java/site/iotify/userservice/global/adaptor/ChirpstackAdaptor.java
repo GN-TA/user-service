@@ -1,5 +1,6 @@
 package site.iotify.userservice.global.adaptor;
 
+import jdk.jfr.ContentType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -249,4 +250,67 @@ public class ChirpstackAdaptor {
         return response.getBody();
     }
 
+    public TenantResponseDto.TenantUserGet getTenantUser(String tenantId, String userId) {
+        HttpEntity<Void> httpEntity = HttpEntityFactory.<Void>builder()
+                .contentType(MediaType.APPLICATION_JSON)
+                .setBearerAuth(key)
+                .build();
+
+        UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(host)
+                .path("/api/tenants/{tenantId}/users/{userId}");
+
+
+        return restTemplate.exchange(
+                        uriComponentsBuilder.buildAndExpand(tenantId, userId).toUriString(),
+                        HttpMethod.GET,
+                        httpEntity,
+                        new ParameterizedTypeReference<TenantResponseDto.TenantUserGet>() {
+                        })
+                .getBody();
+    }
+
+    public void deleteUserInTenant(String tenantId, String userId) {
+        restTemplate.exchange(
+                UriComponentsBuilder
+                        .fromHttpUrl(host)
+                        .path("/api/tenants/{tenantId}/users/{userId}")
+                        .buildAndExpand(tenantId, userId)
+                        .toUriString(),
+                HttpMethod.DELETE,
+                HttpEntityFactory.<Void>builder()
+                        .setBearerAuth(key)
+                        .build(),
+                new ParameterizedTypeReference<Void>() {
+                });
+    }
+
+    public void updateUserInTenant(String tenantId, String userId, TenantRequestDto.TenantUserUpdate tenantUserUpdate) {
+        restTemplate.exchange(
+                UriComponentsBuilder.fromHttpUrl(host)
+                        .path("/api/tenants/{tenantId}/users/{userId}")
+                        .buildAndExpand(tenantId, userId)
+                        .toUriString(),
+                HttpMethod.PUT,
+                HttpEntityFactory.builder()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .setBearerAuth(key)
+                        .body(tenantUserUpdate)
+                        .build(),
+                new ParameterizedTypeReference<TenantRequestDto.TenantUserUpdate>() {
+                }
+        );
+    }
+
+    public void deleteTenant(String tenantId) {
+        restTemplate.exchange(
+                UriComponentsBuilder.fromHttpUrl(host)
+                        .path("/api/tenants/{tenantId}")
+                        .buildAndExpand(tenantId)
+                        .toUriString(),
+                HttpMethod.DELETE,
+                HttpEntityFactory.builder().setBearerAuth(key).build(),
+                new ParameterizedTypeReference<Void>() {
+                }
+        );
+    }
 }

@@ -1,5 +1,6 @@
 package site.iotify.userservice.domain.tenant.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,5 +30,21 @@ public class TenantRequestDto {
         private int maxDeviceCount;
         private String ip;
         private Map<String, String> tags;
+    }
+
+    @Getter
+    public static class TenantUserUpdate {
+        private TenantRequestDto.TenantUser tenantUser;
+    }
+
+    @Getter
+    public static class TenantUser {
+        private String email;
+        @JsonProperty("isAdmin")
+        private boolean isAdmin;
+        @JsonProperty("isDeviceAdmin")
+        private boolean isDeviceAdmin;
+        @JsonProperty("isGatewayAdmin")
+        private boolean isGatewayAdmin;
     }
 }
