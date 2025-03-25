@@ -12,6 +12,7 @@ import site.iotify.userservice.domain.user.entity.User;
 import site.iotify.userservice.domain.user.repository.UserRepository;
 import site.iotify.userservice.global.adaptor.ChirpstackAdaptor;
 import site.iotify.userservice.global.exception.CreationFailedException;
+import site.iotify.userservice.global.exception.UnAuthorizedException;
 import site.iotify.userservice.global.exception.UserNotFoundException;
 
 import java.time.LocalDateTime;
@@ -140,5 +141,37 @@ public class TenantService {
         TenantResponseDto.TenantUsersGet tenantUsersGet = chirpstackAdaptor.getTenantUsers(limit, offset, tenantId);
 
         return new TenantResponseDto.TenantWithUsersGet(tenantGetWrapped, tenantUsersGet);
+    }
+
+    /**
+     * 조직 내에 유저를 삭제합니다.
+     *
+     * @param userId
+     * @param id
+     * @return
+     */
+    public void removeUser(String userId, String tenantId, String targetUserId) {
+        TenantResponseDto.TenantUserGet user = chirpstackAdaptor.getTenantUser(tenantId, userId);
+        if (!user.getTenantUser().isAdmin()) {
+            throw new UnAuthorizedException();
+        }
+        chirpstackAdaptor.deleteUserInTenant(tenantId, targetUserId);
+    }
+
+    public void updateUser(String userId, String tenantId, String targetUserId, TenantRequestDto.TenantUserUpdate tenantUserUpdate) {
+        TenantResponseDto.TenantUserGet user = chirpstackAdaptor.getTenantUser(tenantId, userId);
+        if (!user.getTenantUser().isAdmin()) {
+            throw new UnAuthorizedException();
+        }
+
+        chirpstackAdaptor.updateUserInTenant(tenantId, targetUserId, tenantUserUpdate);
+    }
+
+    public void deleteTenant(String userId, String tenantId) {
+        TenantResponseDto.TenantUserGet user = chirpstackAdaptor.getTenantUser(tenantId, userId);
+        if (!user.getTenantUser().isAdmin()) {
+            throw new UnAuthorizedException();
+        }
+        chirpstackAdaptor.deleteTenant(tenantId);
     }
 }
