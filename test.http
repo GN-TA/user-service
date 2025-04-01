@@ -26,6 +26,23 @@ Content-Type: application/json
   "provider": "google"
 }
 
+### 유저 정보 업데이트
+POST localhost:8092/user-info
+Content-Type: application/json
+X-USER-ID: e4cb2550-d93c-4627-968d-fdfd113da28d
+
+{
+  "id": "e4cb2550-d93c-4627-968d-fdfd113da28d",
+  "email": "test@test.com",
+  "username": "test-updated",
+  "password": "123",
+  "auth": "ADMIN",
+  "provider": ""
+}
+
+### 유저 비밀번호 변경
+
+
 ### 유저 단일 조회
 GET localhost:8092/user?email=test@test.com
 Content-Type: application/json

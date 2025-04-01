@@ -1,6 +1,5 @@
 package site.iotify.userservice.global.adaptor;
 
-import jdk.jfr.ContentType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -10,8 +9,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import site.iotify.userservice.domain.tenant.dto.*;
 import site.iotify.userservice.domain.user.dto.ChirpstackTenantUserDto;
 import site.iotify.userservice.domain.user.dto.ChirpstackUserDto;
+import site.iotify.userservice.domain.user.dto.UserDto;
 import site.iotify.userservice.domain.user.dto.response.ChirpstackUserListResponse;
-import site.iotify.userservice.domain.user.dto.request.ChirpstackCreateUserRequestDto;
+import site.iotify.userservice.domain.user.dto.request.ChirpstackUserRequestDto;
 import site.iotify.userservice.global.exception.TenantNotFoundException;
 import site.iotify.userservice.global.util.HttpEntityFactory;
 
@@ -202,17 +202,17 @@ public class ChirpstackAdaptor {
         return response.getBody();
     }
 
-    public String addUsersInNetwork(String ip, ChirpstackCreateUserRequestDto chirpstackCreateUserRequestDto) {
+    public String addUsersInNetwork(String ip, ChirpstackUserRequestDto chirpstackUserRequestDto) {
         String targetHost = host;
         if (ip != null) {
             targetHost = ip;
         }
-        chirpstackCreateUserRequestDto.getUser().setAdmin(false);
+        chirpstackUserRequestDto.getUser().setAdmin(false);
 
-        HttpEntity<ChirpstackCreateUserRequestDto> httpEntity = HttpEntityFactory.<ChirpstackCreateUserRequestDto>builder()
+        HttpEntity<ChirpstackUserRequestDto> httpEntity = HttpEntityFactory.<ChirpstackUserRequestDto>builder()
                 .contentType(MediaType.APPLICATION_JSON)
                 .setBearerAuth(key)
-                .body(chirpstackCreateUserRequestDto)
+                .body(chirpstackUserRequestDto)
                 .build();
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder
@@ -297,6 +297,23 @@ public class ChirpstackAdaptor {
                         .body(tenantUserUpdate)
                         .build(),
                 new ParameterizedTypeReference<TenantRequestDto.TenantUserUpdate>() {
+                }
+        );
+    }
+
+    public void updateUser(String userId, ChirpstackUserRequestDto.UserUpdateWrapper user) {
+        restTemplate.exchange(
+                UriComponentsBuilder.fromHttpUrl(host)
+                        .path("/api/users/{userId}")
+                        .buildAndExpand(userId)
+                        .toUriString(),
+                HttpMethod.PUT,
+                HttpEntityFactory.builder()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .setBearerAuth(key)
+                        .body(user)
+                        .build(),
+                new ParameterizedTypeReference<Void>() {
                 }
         );
     }

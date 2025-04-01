@@ -10,19 +10,20 @@ import org.hibernate.validator.constraints.UniqueElements;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class User {
 
     @Column(name = "email", unique = true, nullable = false)
     private String email;
-
     @Id
     private String id;
-
     private String username;
-
     private String password;
-
     private String auth;
-
     private String provider;
+    @Column(name = "is_active")
+    private boolean isActive;
+    @Column(name = "is_admin")
+    private boolean isAdmin;
+    private String note;
 }

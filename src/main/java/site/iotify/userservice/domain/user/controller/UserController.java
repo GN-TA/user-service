@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import site.iotify.userservice.domain.user.dto.ChangePasswordRequest;
 import site.iotify.userservice.domain.user.dto.UserDto;
+import site.iotify.userservice.domain.user.dto.request.ChirpstackUserRequestDto;
 import site.iotify.userservice.global.exception.UnAuthenticatedException;
 import site.iotify.userservice.global.exception.UnAuthorizedException;
 import site.iotify.userservice.global.exception.UserAlreadyExistsException;
@@ -137,12 +138,9 @@ public class UserController {
      * @throws UserNotFoundException 제공된 이메일에 해당하는 사용자가 존재하지 않을 경우 발생
      */
     @PostMapping("/user-info")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto) {
-        UserDto user = userService.loadUserByEmail(userDto.getEmail());
-        if (user == null) {
-            throw new UserNotFoundException(userDto.getEmail());
-        }
-        userService.updateUserInfo(userDto);
+    public ResponseEntity<UserDto> updateUser(@RequestHeader(name = "X-USER-ID") String userId,
+                                              @RequestBody ChirpstackUserRequestDto.UserUpdate userDto) {
+        userService.updateUserInfo(userId, userDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

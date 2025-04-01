@@ -2,8 +2,9 @@ package site.iotify.userservice.domain.user.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import site.iotify.userservice.domain.user.dto.ChirpstackUserDto;
 import site.iotify.userservice.domain.user.dto.ChirpstackUserInfo;
-import site.iotify.userservice.domain.user.dto.request.ChirpstackCreateUserRequestDto;
+import site.iotify.userservice.domain.user.dto.request.ChirpstackUserRequestDto;
 import site.iotify.userservice.domain.user.repository.UserRepository;
 import site.iotify.userservice.domain.user.dto.ChangePasswordRequest;
 import site.iotify.userservice.domain.user.dto.UserDto;
@@ -80,7 +81,7 @@ public class UserService {
                 .build();
 
         String chirpstackUserId = chirpstackAdaptor.addUsersInNetwork(null,
-                new ChirpstackCreateUserRequestDto(
+                new ChirpstackUserRequestDto(
                         chirpstackUserInfo,
                         userDto.getPassword(),
                         null
@@ -145,22 +146,24 @@ public class UserService {
      * @throws UserNotFoundException    제공된 이메일에 해당하는 사용자가 존재하지 않을 경우 발생
      * @throws IllegalArgumentException 유저 이름 이외의 다른 정보를 수정하려 할 경우 발생
      */
-    public void updateUserInfo(UserDto userDto) {
-        User user = userRepository.findByEmail(userDto.getEmail()).orElse(null);
-        if (user == null) {
-            throw new UserNotFoundException(user.getEmail());
+    public void updateUserInfo(String userId, ChirpstackUserRequestDto.UserUpdate userDto) {
+        if (!userId.equals(userDto.getId())) {
+            throw new IllegalArgumentException("클라이언트 아이디와 요청 데이터의 아이디가 일치 하지 않습니다.");
         }
-        if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword()) ||
-                !userDto.getId().equals(user.getId()) ||
-                !userDto.getAuth().equals(user.getAuth()) ||
+        User user = userRepository.findById(userId).orElse(null);
+        ChirpstackUserDto chirpstackUserDto = chirpstackAdaptor.getUser(userDto.getId());
+
+        if (user == null || chirpstackUserDto == null) {
+            throw new UserNotFoundException(userDto.getEmail());
+        }
+        if (!userDto.getId().equals(user.getId()) ||
                 !userDto.getProvider().equals(user.getProvider())
         ) {
-            throw new IllegalArgumentException("해당 API를 통해서는 유저이름만 수정 가능");
+            throw new IllegalArgumentException("ID와 Provider는 수정할 수 없습니다.");
         }
 
-        UserDto updatedUser = new UserDto().fromEntity(user);
-        updatedUser.setUsername(userDto.getUsername());
-        userRepository.save(updatedUser.toEntity());
+        userRepository.save(userDto.toEntity());
+        chirpstackAdaptor.updateUser(user.getId(), new ChirpstackUserRequestDto.UserUpdateWrapper(userDto));
     }
 
     /**
