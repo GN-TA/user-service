@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import site.iotify.userservice.domain.tenant.dto.TenantRequestDto;
 import site.iotify.userservice.domain.tenant.dto.TenantResponseDto;
 import site.iotify.userservice.domain.user.dto.ChirpstackTenantUserDto;
-import site.iotify.userservice.domain.user.dto.ChirpstackUserDto;
 import site.iotify.userservice.domain.user.dto.ChirpstackUserInfo;
+import site.iotify.userservice.domain.user.dto.response.ChirpstackUserResponseDto;
 import site.iotify.userservice.domain.user.entity.User;
 import site.iotify.userservice.domain.user.repository.UserRepository;
 import site.iotify.userservice.global.adaptor.ChirpstackAdaptor;
@@ -84,7 +84,7 @@ public class TenantService {
      * @return
      */
     public List<TenantResponseDto.TenantGet> getTenantsByUser(String userId) {
-        ChirpstackUserDto user = chirpstackAdaptor.getUser(userId);
+        ChirpstackUserResponseDto.UserGet user = chirpstackAdaptor.getUser(userId);
         if (Objects.isNull(user)) {
             throw new UserNotFoundException(String.format("user {%s} not found in chirpstack DB", userId));
         }

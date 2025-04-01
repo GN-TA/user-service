@@ -4,15 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import site.iotify.userservice.domain.user.dto.ChangePasswordRequest;
 import site.iotify.userservice.domain.user.dto.UserDto;
-import site.iotify.userservice.domain.user.dto.request.ChirpstackUserRequestDto;
+import site.iotify.userservice.domain.user.dto.request.UserRequestDto;
+import site.iotify.userservice.domain.user.dto.response.UserResponseDto;
+import site.iotify.userservice.domain.user.service.EmailVerificationService;
+import site.iotify.userservice.domain.user.service.UserService;
 import site.iotify.userservice.global.exception.UnAuthenticatedException;
 import site.iotify.userservice.global.exception.UnAuthorizedException;
 import site.iotify.userservice.global.exception.UserAlreadyExistsException;
 import site.iotify.userservice.global.exception.UserNotFoundException;
-import site.iotify.userservice.domain.user.service.EmailVerificationService;
-import site.iotify.userservice.domain.user.service.UserService;
 
 @Slf4j
 @RestController
@@ -37,8 +37,8 @@ public class UserController {
      * @throws UserNotFoundException 주어진 ID를 가진 사용자가 존재하지 않을 경우 발생
      */
     @GetMapping("/v1/user")
-    public ResponseEntity<UserDto> fetchUserById(@RequestHeader("X-USER-ID") String id) {
-        UserDto userDto = userService.loadUserById(id);
+    public ResponseEntity<UserResponseDto.UserGet> fetchUserById(@RequestHeader("X-USER-ID") String id) {
+        UserResponseDto.UserGet userDto = userService.loadUserById(id);
         if (userDto == null) {
             throw new UserNotFoundException(id);
         }
@@ -112,17 +112,20 @@ public class UserController {
      * @throws UserNotFoundException    제공된 이메일에 해당하는 사용자가 존재하지 않을 경우 발생
      */
     @PostMapping("/pwd")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<String> changePassword(@RequestHeader(name = "X-USER-ID") String userId,
+                                                 @RequestBody UserRequestDto.UserPasswordChange changePasswordRequest) {
+
+        System.out.println(changePasswordRequest);
         if (!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmPassword())) {
             throw new IllegalArgumentException("Passwords do not match");
         }
-        if (changePasswordRequest.getOldPassword().equals(changePasswordRequest.getNewPassword())) {
+        if (changePasswordRequest.getCurrentPassword().equals(changePasswordRequest.getNewPassword())) {
             throw new IllegalArgumentException("New password cannot be the same");
         }
         if (userService.loadUserByEmail(changePasswordRequest.getEmail()) == null) {
             throw new UserNotFoundException(changePasswordRequest.getEmail());
         }
-        userService.changePassword(changePasswordRequest);
+        userService.changePassword(userId, changePasswordRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
@@ -137,9 +140,9 @@ public class UserController {
      * @return 사용자 정보 업데이트 성공 시 HTTP 상태 코드 200(OK)을 포함하는 {@code ResponseEntity}
      * @throws UserNotFoundException 제공된 이메일에 해당하는 사용자가 존재하지 않을 경우 발생
      */
-    @PostMapping("/user-info")
+    @PostMapping("/v1/user-info")
     public ResponseEntity<UserDto> updateUser(@RequestHeader(name = "X-USER-ID") String userId,
-                                              @RequestBody ChirpstackUserRequestDto.UserUpdate userDto) {
+                                              @RequestBody UserRequestDto.UserUpdate userDto) {
         userService.updateUserInfo(userId, userDto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

@@ -2,16 +2,19 @@ package site.iotify.userservice.global.adaptor;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import site.iotify.userservice.domain.tenant.dto.*;
+import site.iotify.userservice.domain.tenant.dto.TenantRequestDto;
+import site.iotify.userservice.domain.tenant.dto.TenantResponseDto;
 import site.iotify.userservice.domain.user.dto.ChirpstackTenantUserDto;
-import site.iotify.userservice.domain.user.dto.ChirpstackUserDto;
-import site.iotify.userservice.domain.user.dto.UserDto;
-import site.iotify.userservice.domain.user.dto.response.ChirpstackUserListResponse;
 import site.iotify.userservice.domain.user.dto.request.ChirpstackUserRequestDto;
+import site.iotify.userservice.domain.user.dto.response.ChirpstackUserListResponse;
+import site.iotify.userservice.domain.user.dto.response.ChirpstackUserResponseDto;
 import site.iotify.userservice.global.exception.TenantNotFoundException;
 import site.iotify.userservice.global.util.HttpEntityFactory;
 
@@ -142,7 +145,7 @@ public class ChirpstackAdaptor {
                 Void.class);
     }
 
-    public ChirpstackUserDto getUser(String id) {
+    public ChirpstackUserResponseDto.UserGet getUser(String id) {
         HttpEntity<Void> httpEntity = HttpEntityFactory.<Void>builder()
                 .setBearerAuth(key)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -150,11 +153,11 @@ public class ChirpstackAdaptor {
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(host)
                 .path(String.format("/api/users/%s", id));
 
-        ResponseEntity<ChirpstackUserDto> response = restTemplate.exchange(
+        ResponseEntity<ChirpstackUserResponseDto.UserGet> response = restTemplate.exchange(
                 uriComponentsBuilder.toUriString(),
                 HttpMethod.GET,
                 httpEntity,
-                new ParameterizedTypeReference<ChirpstackUserDto>() {
+                new ParameterizedTypeReference<ChirpstackUserResponseDto.UserGet>() {
                 });
 
         return response.getBody();
@@ -326,6 +329,19 @@ public class ChirpstackAdaptor {
                         .toUriString(),
                 HttpMethod.DELETE,
                 HttpEntityFactory.builder().setBearerAuth(key).build(),
+                new ParameterizedTypeReference<Void>() {
+                }
+        );
+    }
+
+    public void updatePassword(String userId, ChirpstackUserRequestDto.UserPasswordUpdate userPasswordUpdate) {
+        restTemplate.exchange(
+                UriComponentsBuilder.fromHttpUrl(host)
+                        .path("/api/users/{userId}/password")
+                        .buildAndExpand(userId)
+                        .toUriString(),
+                HttpMethod.POST,
+                HttpEntityFactory.builder().setBearerAuth(key).body(userPasswordUpdate).build(),
                 new ParameterizedTypeReference<Void>() {
                 }
         );

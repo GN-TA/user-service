@@ -1,41 +1,37 @@
 package site.iotify.userservice.domain.user.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
-import lombok.*;
-import site.iotify.userservice.domain.user.dto.ChirpstackUserInfo;
-import site.iotify.userservice.domain.user.dto.UserDto;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import site.iotify.userservice.domain.user.entity.User;
-import site.iotify.userservice.global.adaptor.ChirpstackAdaptor;
 
-import java.util.List;
-
-@Data
-@AllArgsConstructor
-@ToString
-public class ChirpstackUserRequestDto {
-    private ChirpstackUserInfo user;
-    private String password;
-    private List<UserTenant> tenants;
+public class UserRequestDto {
+    private UserRequestDto() {
+    }
 
     @Getter
-    @Setter
-    @AllArgsConstructor
-    public static class UserTenant {
-        private String tenantId;
-        private boolean isAdmin;
-        private boolean isDeviceAdmin;
-        private boolean isGatewayAdmin;
+    @ToString
+    public static class UserPasswordChange {
+        @NotBlank
+        private String id;
+        @NotBlank
+        private String email;
+        @NotBlank
+        private String currentPassword;
+        @NotBlank
+        @Setter
+        private String newPassword;
+        @NotBlank
+        private String confirmPassword;
+
     }
 
     @Getter
     @AllArgsConstructor
-    public static class UserUpdateWrapper {
-        ChirpstackUserRequestDto.UserUpdate user;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    public static class UserUpdate {
+    public static class UserSave {
         @Setter
         private String id;
         private String email;
@@ -43,6 +39,7 @@ public class ChirpstackUserRequestDto {
         private boolean isAdmin;
         private String note;
         private String username;
+        @Setter
         private String password;
         private String auth;
         private String provider;
@@ -52,11 +49,11 @@ public class ChirpstackUserRequestDto {
             this.isAdmin = false;
         }
 
-        public static ChirpstackUserRequestDto.UserUpdate fromEntity(User userEntity) {
+        public static UserRequestDto.UserSave fromEntity(User userEntity) {
             if (userEntity == null) {
                 return null;
             }
-            return new ChirpstackUserRequestDto.UserUpdate(
+            return new UserRequestDto.UserSave(
                     userEntity.getId(),
                     userEntity.getEmail(),
                     userEntity.isActive(),
@@ -86,8 +83,14 @@ public class ChirpstackUserRequestDto {
 
     @Getter
     @AllArgsConstructor
-    public static class UserPasswordUpdate {
-        private String password;
-
+    @ToString
+    public static class UserUpdate {
+        @Setter
+        private String id;
+        private String email;
+        private boolean isActive;
+        private String note;
+        private String username;
+        private String auth;
     }
 }
