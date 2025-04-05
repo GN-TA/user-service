@@ -139,7 +139,7 @@ public class TenantService {
         int limit = pageable.getPageNumber() == 0 ? pageable.getPageSize() : pageable.getPageSize() * pageable.getPageNumber();
 
         TenantResponseDto.TenantUsersGet tenantUsersGet = chirpstackAdaptor.getTenantUsers(limit, offset, tenantId);
-
+        // todo : 여기 게트웨이 리스트도 rest로 가져와서 아이디 리스트만 넣고 보내기
         return new TenantResponseDto.TenantWithUsersGet(tenantGetWrapped, tenantUsersGet);
     }
 
