@@ -9,7 +9,6 @@ import org.springframework.test.context.ActiveProfiles;
 import site.iotify.userservice.domain.user.service.MinioService;
 import site.iotify.userservice.global.adaptor.ChirpstackAdaptor;
 
-@ActiveProfiles("test")
 @SpringBootTest
 class ChirpstackAdaptorTest {
     @MockBean
