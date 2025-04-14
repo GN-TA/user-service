@@ -30,3 +30,9 @@ chirpstack:
 logging:
   level:
     root: debug
+
+
+minio:
+  url: ${}
+  access-key: ${}
+  secret-key: ${}

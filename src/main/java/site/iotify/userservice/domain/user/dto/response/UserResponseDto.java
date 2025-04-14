@@ -1,5 +1,6 @@
 package site.iotify.userservice.domain.user.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,13 +34,21 @@ public class UserResponseDto {
         private String auth;
 
         private String provider;
+        @JsonProperty("isAdmin")
         private boolean isAdmin;
+        @JsonProperty("isActive")
         private boolean isActive;
         private String note;
+        @Setter
+        private String profileImageUrl;
 
         public static UserResponseDto.UserGet fromEntity(User userEntity) {
             if (userEntity == null) {
                 return null;
+            }
+            String profileImageUrl = null;
+            if (userEntity.getProfileImage() != null) {
+                profileImageUrl = userEntity.getProfileImage();
             }
             return new UserResponseDto.UserGet(
                     userEntity.getId(),
@@ -50,7 +59,8 @@ public class UserResponseDto {
                     userEntity.getProvider(),
                     userEntity.isAdmin(),
                     userEntity.isActive(),
-                    userEntity.getNote()
+                    userEntity.getNote(),
+                    profileImageUrl
             );
         }
 

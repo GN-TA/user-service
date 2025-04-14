@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import site.iotify.userservice.domain.user.dto.UserDto;
 import site.iotify.userservice.domain.user.dto.request.UserRequestDto;
 import site.iotify.userservice.domain.user.dto.response.UserResponseDto;
@@ -142,8 +143,9 @@ public class UserController {
      */
     @PostMapping("/v1/user-info")
     public ResponseEntity<UserDto> updateUser(@RequestHeader(name = "X-USER-ID") String userId,
-                                              @RequestBody UserRequestDto.UserUpdate userDto) {
-        userService.updateUserInfo(userId, userDto);
+                                              @ModelAttribute UserRequestDto.UserUpdate userDto,
+                                              @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
+        userService.updateUserInfo(userId, userDto, profileImage);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
