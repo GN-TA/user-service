@@ -2,17 +2,22 @@ package site.iotify.userservice.domain.user.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import site.iotify.userservice.domain.user.dto.ChirpstackUserInfo;
-import site.iotify.userservice.domain.user.dto.request.ChirpstackCreateUserRequestDto;
-import site.iotify.userservice.domain.user.repository.UserRepository;
-import site.iotify.userservice.domain.user.dto.ChangePasswordRequest;
 import site.iotify.userservice.domain.user.dto.UserDto;
+import site.iotify.userservice.domain.user.dto.request.ChirpstackUserRequestDto;
+import site.iotify.userservice.domain.user.dto.request.UserRequestDto;
+import site.iotify.userservice.domain.user.dto.response.ChirpstackUserResponseDto;
+import site.iotify.userservice.domain.user.dto.response.UserResponseDto;
 import site.iotify.userservice.domain.user.entity.User;
+import site.iotify.userservice.domain.user.repository.UserRepository;
 import site.iotify.userservice.global.adaptor.ChirpstackAdaptor;
 import site.iotify.userservice.global.exception.UnAuthenticatedException;
 import site.iotify.userservice.global.exception.UnAuthorizedException;
 import site.iotify.userservice.global.exception.UserAlreadyExistsException;
 import site.iotify.userservice.global.exception.UserNotFoundException;
+
+import java.util.Objects;
 
 @Service
 public class UserService {
@@ -21,10 +26,16 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ChirpstackAdaptor chirpstackAdaptor) {
+    private final MinioService minioService;
+
+    public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       ChirpstackAdaptor chirpstackAdaptor,
+                       MinioService minioService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.chirpstackAdaptor = chirpstackAdaptor;
+        this.minioService = minioService;
     }
 
     /**
@@ -36,9 +47,13 @@ public class UserService {
      * @param id 조회할 사용자의 고유 식별자
      * @return {@link UserDto} 객체 또는 사용자가 존재하지 않을 경우 {@code null}
      */
-    public UserDto loadUserById(String id) {
+    public UserResponseDto.UserGet loadUserById(String id) {
         User user = userRepository.findById(id).orElse(null);
-        UserDto userDto = new UserDto().fromEntity(user);
+        if (Objects.isNull(user)) {
+            throw new UserNotFoundException(String.format("%s not found", id));
+        }
+        UserResponseDto.UserGet userDto = UserResponseDto.UserGet.fromEntity(user);
+        userDto.setProfileImageUrl(minioService.getPresignedUrl(userDto.getProfileImageUrl()));
         userDto.setPassword(null);
         return userDto;
     }
@@ -80,7 +95,7 @@ public class UserService {
                 .build();
 
         String chirpstackUserId = chirpstackAdaptor.addUsersInNetwork(null,
-                new ChirpstackCreateUserRequestDto(
+                new ChirpstackUserRequestDto(
                         chirpstackUserInfo,
                         userDto.getPassword(),
                         null
@@ -113,18 +128,22 @@ public class UserService {
      * @throws UserNotFoundException    제공된 이메일에 해당하는 사용자가 존재하지 않을 경우 발생
      * @throws UnAuthenticatedException 기존 비밀번호가 올바르지 않을 경우 발생
      */
-    public void changePassword(ChangePasswordRequest changePasswordRequest) {
-        User user = userRepository.findByEmail(changePasswordRequest.getEmail()).orElse(null);
-        if (user == null) {
+    public void changePassword(String userId, UserRequestDto.UserPasswordChange changePasswordRequest) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new UserNotFoundException(String.format("userId : %s not found", changePasswordRequest.getEmail())));
+        ChirpstackUserResponseDto.UserGet userGet = chirpstackAdaptor.getUser(changePasswordRequest.getId());
+        if (userGet == null) {
             throw new UserNotFoundException(changePasswordRequest.getEmail());
         }
-        if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), user.getPassword()) ||
+                !userGet.getUser().getId().equals(userId)) {
             throw new UnAuthenticatedException();
         }
-        String encodedPassword = passwordEncoder.encode(changePasswordRequest.getNewPassword());
-        UserDto updatedUser = new UserDto().fromEntity(user);
-        updatedUser.setPassword(encodedPassword);
-        userRepository.save(updatedUser.toEntity());
+        changePasswordRequest.setNewPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        user.updatePassword(changePasswordRequest);
+        chirpstackAdaptor.updatePassword(userId, new ChirpstackUserRequestDto.UserPasswordUpdate(
+                userRepository.save(user).getPassword())
+        );
     }
 
     /**
@@ -141,26 +160,37 @@ public class UserService {
      *   <li>사용자 이름을 업데이트한 후 저장</li>
      * </ol>
      *
-     * @param userDto 업데이트할 사용자 정보를 포함한 데이터 객체
+     * @param userDto      업데이트할 사용자 정보를 포함한 데이터 객체
+     * @param profileImage
      * @throws UserNotFoundException    제공된 이메일에 해당하는 사용자가 존재하지 않을 경우 발생
      * @throws IllegalArgumentException 유저 이름 이외의 다른 정보를 수정하려 할 경우 발생
      */
-    public void updateUserInfo(UserDto userDto) {
-        User user = userRepository.findByEmail(userDto.getEmail()).orElse(null);
-        if (user == null) {
-            throw new UserNotFoundException(user.getEmail());
-        }
-        if (!passwordEncoder.matches(userDto.getPassword(), user.getPassword()) ||
-                !userDto.getId().equals(user.getId()) ||
-                !userDto.getAuth().equals(user.getAuth()) ||
-                !userDto.getProvider().equals(user.getProvider())
-        ) {
-            throw new IllegalArgumentException("해당 API를 통해서는 유저이름만 수정 가능");
+    public void updateUserInfo(String userId, UserRequestDto.UserUpdate userDto, MultipartFile profileImage) {
+        String imageUrl = null;
+        if (!Objects.isNull(profileImage) && !profileImage.isEmpty()) {
+            imageUrl = minioService.uploadFile(profileImage);
         }
 
-        UserDto updatedUser = new UserDto().fromEntity(user);
-        updatedUser.setUsername(userDto.getUsername());
-        userRepository.save(updatedUser.toEntity());
+        if (!userId.equals(userDto.getId())) {
+            throw new IllegalArgumentException("클라이언트 아이디와 요청 데이터의 아이디가 일치 하지 않습니다.");
+        }
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new UserNotFoundException(String.format("userId: %s not found", userId)));
+        ChirpstackUserResponseDto.UserGet chirpstackUserDto = chirpstackAdaptor.getUser(userDto.getId());
+
+        if (chirpstackUserDto == null) {
+            throw new UserNotFoundException(userDto.getEmail());
+        }
+        if (!userDto.getId().equals(user.getId())) {
+            throw new IllegalArgumentException("ID는 수정할 수 없습니다.");
+        }
+        user.updateUserInfo(userDto);
+        if (!Objects.isNull(imageUrl)) {
+            user.setProfileImage(imageUrl);
+        }
+        chirpstackAdaptor.updateUser(user.getId(), new ChirpstackUserRequestDto.UserUpdateWrapper(
+                ChirpstackUserRequestDto.UserUpdate.fromEntity(userRepository.save(user))
+        ));
     }
 
     /**

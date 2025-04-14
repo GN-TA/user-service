@@ -1,12 +1,13 @@
 package site.iotify.userservice.domain.user.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import site.iotify.userservice.domain.user.entity.User;
 
 @Getter
+@ToString
 public class UserDto {
 
     @Setter

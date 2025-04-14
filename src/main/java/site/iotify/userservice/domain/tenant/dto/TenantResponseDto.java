@@ -66,7 +66,7 @@ public class TenantResponseDto {
     @ToString
     public static class TenantUser {
         private String tenantId;
-        private String userId;
+        private String id;
         private LocalDateTime creatdAt;
         private LocalDateTime updatedAt;
         @JsonProperty("isAdmin")

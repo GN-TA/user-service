@@ -30,3 +30,8 @@ chirpstack:
 logging:
   level:
     root: info
+
+minio:
+  url: http://localhost:9000
+  access-key: CoBwz60z7dfAoguLHTOq
+  secret-key: QlwVpDhx2NFcO3yk1iPRUB45nYFIKGOyM8Qixt3B
