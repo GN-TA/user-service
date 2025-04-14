@@ -15,7 +15,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class MinioService {
     private final MinioClient minioClient;
-    private final String bucketName = "user-profile-images";
+    private static final String bucketName = "iotify-members-image";
 
     @PostConstruct
     public void init() {
@@ -42,7 +42,7 @@ public class MinioService {
                             .build()
             );
 
-            return String.format("%s/%s", bucketName, objectName);
+            return String.format("%s", objectName);
         } catch (Exception e) {
             throw new RuntimeException("MinIO 파일 업로드 실패", e);
         }
