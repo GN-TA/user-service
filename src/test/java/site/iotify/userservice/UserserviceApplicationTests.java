@@ -8,7 +8,6 @@ import site.iotify.userservice.domain.user.service.MinioService;
 import site.iotify.userservice.global.adaptor.ChirpstackAdaptor;
 
 @SpringBootTest
-@ActiveProfiles("test")
 class UserserviceApplicationTests {
     @MockBean
     MinioService minioService;
