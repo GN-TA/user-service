@@ -11,7 +11,6 @@ import site.iotify.userservice.domain.user.entity.User;
 
 import java.util.Optional;
 
-@ActiveProfiles("test")
 @DataJpaTest
 class UserRepositoryTest {
     @Autowired
