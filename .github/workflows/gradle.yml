@@ -97,6 +97,9 @@ jobs:
             export REDIS_HOST=${{ secrets.REDIS_HOST }}
             export REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
             export REDIS_PORT=${{ secrets.REDIS_PORT }}
+            export MINIO_URL=${{ secrets.MINIO_URL }}
+            export MINIO_ACCESS_KEY=${{ secrets.MINIO_ACCESS_KEY }}
+            export MINIO_SECRET_KEY=${{ secrets.MINIO_SECRET_KEY }}
             export DOCKER_IMAGE=codethestudent/iot-user-service:latest
             
             cd docker-compose
