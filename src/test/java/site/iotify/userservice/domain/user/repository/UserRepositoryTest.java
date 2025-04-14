@@ -33,7 +33,8 @@ class UserRepositoryTest {
                 null,
                 true,
                 false,
-                "this is simple bio "
+                "this is simple bio ",
+                ""
         );
 
         entityManager.persistAndFlush(user); // 저장 후 즉시 플러시
