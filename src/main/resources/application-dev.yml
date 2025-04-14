@@ -32,6 +32,8 @@ logging:
     root: info
 
 minio:
-  url: http://localhost:9000
-  access-key: CoBwz60z7dfAoguLHTOq
-  secret-key: QlwVpDhx2NFcO3yk1iPRUB45nYFIKGOyM8Qixt3B
+  url:
+    internal: http://localhost:9000
+    external: http://localhost:9000
+  access-key: JuOZZWJpYvkhJDeiUZ4a
+  secret-key: UpcNt6zRdswxQlrOot5iAeVU9Lh1Y8TKKEwgYr4T

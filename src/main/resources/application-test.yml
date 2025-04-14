@@ -1,4 +1,0 @@
-minio:
-  enabled: false
-chirpstack:
-  enabled: false
