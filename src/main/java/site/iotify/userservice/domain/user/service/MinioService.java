@@ -14,7 +14,6 @@ import java.util.UUID;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "minio.enabled", havingValue = "true", matchIfMissing = false)
 public class MinioService {
     private final MinioClient minioClient;
     private static final String bucketName = "iotify-members-image";
