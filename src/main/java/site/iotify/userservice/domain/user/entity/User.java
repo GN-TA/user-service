@@ -27,6 +27,8 @@ public class User {
     @Column(name = "is_admin")
     private boolean isAdmin;
     private String note;
+    @Setter
+    private String profileImage;
 
     public void updateUserInfo(UserRequestDto.UserUpdate userDto) {
         this.email = userDto.getEmail();

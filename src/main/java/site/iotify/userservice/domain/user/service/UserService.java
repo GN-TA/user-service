@@ -2,6 +2,7 @@ package site.iotify.userservice.domain.user.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import site.iotify.userservice.domain.user.dto.ChirpstackUserInfo;
 import site.iotify.userservice.domain.user.dto.UserDto;
 import site.iotify.userservice.domain.user.dto.request.ChirpstackUserRequestDto;
@@ -25,10 +26,16 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ChirpstackAdaptor chirpstackAdaptor) {
+    private final MinioService minioService;
+
+    public UserService(UserRepository userRepository,
+                       PasswordEncoder passwordEncoder,
+                       ChirpstackAdaptor chirpstackAdaptor,
+                       MinioService minioService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.chirpstackAdaptor = chirpstackAdaptor;
+        this.minioService = minioService;
     }
 
     /**
@@ -46,6 +53,7 @@ public class UserService {
             throw new UserNotFoundException(String.format("%s not found", id));
         }
         UserResponseDto.UserGet userDto = UserResponseDto.UserGet.fromEntity(user);
+        userDto.setProfileImageUrl(minioService.getPresignedUrl(userDto.getProfileImageUrl()));
         userDto.setPassword(null);
         return userDto;
     }
@@ -152,12 +160,17 @@ public class UserService {
      *   <li>사용자 이름을 업데이트한 후 저장</li>
      * </ol>
      *
-     * @param userDto 업데이트할 사용자 정보를 포함한 데이터 객체
+     * @param userDto      업데이트할 사용자 정보를 포함한 데이터 객체
+     * @param profileImage
      * @throws UserNotFoundException    제공된 이메일에 해당하는 사용자가 존재하지 않을 경우 발생
      * @throws IllegalArgumentException 유저 이름 이외의 다른 정보를 수정하려 할 경우 발생
      */
-    public void updateUserInfo(String userId, UserRequestDto.UserUpdate userDto) {
-        System.out.println(userDto);
+    public void updateUserInfo(String userId, UserRequestDto.UserUpdate userDto, MultipartFile profileImage) {
+        String imageUrl = null;
+        if (!Objects.isNull(profileImage) && !profileImage.isEmpty()) {
+            imageUrl = minioService.uploadFile(profileImage);
+        }
+
         if (!userId.equals(userDto.getId())) {
             throw new IllegalArgumentException("클라이언트 아이디와 요청 데이터의 아이디가 일치 하지 않습니다.");
         }
@@ -172,7 +185,9 @@ public class UserService {
             throw new IllegalArgumentException("ID는 수정할 수 없습니다.");
         }
         user.updateUserInfo(userDto);
-        System.out.println(user);
+        if (!Objects.isNull(imageUrl)) {
+            user.setProfileImage(imageUrl);
+        }
         chirpstackAdaptor.updateUser(user.getId(), new ChirpstackUserRequestDto.UserUpdateWrapper(
                 ChirpstackUserRequestDto.UserUpdate.fromEntity(userRepository.save(user))
         ));
