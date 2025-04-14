@@ -14,17 +14,17 @@ import java.util.UUID;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "minio.enabled", havingValue = "true", matchIfMissing = false)
 public class MinioService {
-    private final MinioClient minioClient;
+    private final MinioClient internalMinioClient;
+    private final MinioClient externalMinioClient;
     private static final String bucketName = "iotify-members-image";
 
     @PostConstruct
     public void init() {
         try {
-            boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+            boolean found = internalMinioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
             if (!found) {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+                internalMinioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
             }
         } catch (Exception e) {
             throw new RuntimeException("Minio 초기화 실패", e);
@@ -35,7 +35,7 @@ public class MinioService {
         try {
             String objectName = UUID.randomUUID() + "_" + file.getOriginalFilename();
 
-            minioClient.putObject(
+            internalMinioClient.putObject(
                     PutObjectArgs.builder()
                             .bucket(bucketName)
                             .object(objectName)
@@ -52,7 +52,7 @@ public class MinioService {
 
     public String getPresignedUrl(String profileImage) {
         try {
-            return minioClient.getPresignedObjectUrl(
+            return externalMinioClient.getPresignedObjectUrl(
                     GetPresignedObjectUrlArgs.builder()
                             .method(Method.GET)
                             .bucket(bucketName)
