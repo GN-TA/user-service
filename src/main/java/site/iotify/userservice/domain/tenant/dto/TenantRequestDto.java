@@ -47,4 +47,9 @@ public class TenantRequestDto {
         @JsonProperty("isGatewayAdmin")
         private boolean isGatewayAdmin;
     }
+
+    @Getter
+    public static class TenantUserAdd {
+        private String email;
+    }
 }
