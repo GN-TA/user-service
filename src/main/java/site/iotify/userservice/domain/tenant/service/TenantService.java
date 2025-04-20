@@ -102,6 +102,14 @@ public class TenantService {
         chirpstackAdaptor.updateTenant(new TenantRequestDto.ChirpstackTenantCreate(tenantDto, tenantGetWrapped.getCreatedAt(), LocalDateTime.now()));
     }
 
+    public void addUser(TenantRequestDto.TenantUserAdd tenantUserAdd, String tenantId, boolean isAdmin) {
+        User user = userRepository.findByEmail(tenantUserAdd.getEmail())
+                .orElseThrow(() -> new UserNotFoundException(String.format("User %s not found", tenantUserAdd.getEmail())));
+
+        addUserInTenant(user.getId(), tenantId, isAdmin);
+    }
+
+
     /**
      * 조직에 관리자/사용자를 추가합니다.
      *
@@ -158,20 +166,11 @@ public class TenantService {
         chirpstackAdaptor.deleteUserInTenant(tenantId, targetUserId);
     }
 
-    public void updateUser(String userId, String tenantId, String targetUserId, TenantRequestDto.TenantUserUpdate tenantUserUpdate) {
-        TenantResponseDto.TenantUserGet user = chirpstackAdaptor.getTenantUser(tenantId, userId);
-        if (!user.getTenantUser().isAdmin()) {
-            throw new UnAuthorizedException();
-        }
-
+    public void updateUser(String tenantId, String targetUserId, TenantRequestDto.TenantUserUpdate tenantUserUpdate) {
         chirpstackAdaptor.updateUserInTenant(tenantId, targetUserId, tenantUserUpdate);
     }
 
-    public void deleteTenant(String userId, String tenantId) {
-        TenantResponseDto.TenantUserGet user = chirpstackAdaptor.getTenantUser(tenantId, userId);
-        if (!user.getTenantUser().isAdmin()) {
-            throw new UnAuthorizedException();
-        }
+    public void deleteTenant(String tenantId) {
         chirpstackAdaptor.deleteTenant(tenantId);
     }
 }

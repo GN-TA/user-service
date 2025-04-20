@@ -9,10 +9,10 @@ import java.util.Map;
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GatewayRequest {
-    private RegisterGatewayDto gateway;
+    private GatewayRegisterDto gateway;
 
     @Getter
-    public static class RegisterGatewayDto {
+    public static class GatewayRegisterDto {
         private String description;
 
         @NotBlank(message="gateway Id 입력해주세요")
@@ -25,7 +25,7 @@ public class GatewayRequest {
         @NotBlank(message="name을 입력해주세요")
         private String name;
 
-        private String stateInterval;
+        private String statsInterval;
 
         private Map<String, Object> tags;
 

@@ -40,7 +40,14 @@ X-USER-ID: e4cb2550-d93c-4627-968d-fdfd113da28d
   "provider": ""
 }
 
-### 유저 비밀번호 변경
+### 조직 유저 추가
+POST localhost:8092/v1/tenant/7465a556-f5f3-4f24-b8a6-30369cb2d051/users
+Content-Type: application/json
+X-USER-ID: e4cb2550-d93c-4627-968d-fdfd113da28d
+
+{
+  "email": "insub2004@naver.com"
+}
 
 
 ### 유저 단일 조회

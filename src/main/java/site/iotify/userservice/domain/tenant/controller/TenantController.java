@@ -6,6 +6,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import site.iotify.userservice.global.annotations.TenantAdminOnly;
 import site.iotify.userservice.domain.tenant.dto.TenantRequestDto;
 import site.iotify.userservice.domain.tenant.dto.TenantResponseDto;
 import site.iotify.userservice.domain.tenant.service.TenantService;
@@ -62,6 +63,7 @@ public class TenantController {
      * @param targetUserId
      * @return
      */
+    @TenantAdminOnly
     @DeleteMapping("/tenant/{tenant-id}/user/{user-id}")
     public ResponseEntity<Void> removeUser(@RequestHeader(name = "X-USER-ID") String userId,
                                            @PathVariable(name = "tenant-id") String tenantId,
@@ -70,28 +72,36 @@ public class TenantController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+
     /**
      * 조직의 사용자를 수정합니다.
      *
-     * @param userId
      * @param tenantId
      * @param targetUserId
      * @param tenantUserUpdate
      * @return
      */
+    @TenantAdminOnly
     @PutMapping("/tenant/{tenant-id}/users/{user-id}")
-    public ResponseEntity<Void> updateUser(@RequestHeader(name = "X-USER-ID") String userId,
-                                           @PathVariable(name = "tenant-id") String tenantId,
+    public ResponseEntity<Void> updateUser(@PathVariable(name = "tenant-id") String tenantId,
                                            @PathVariable(name = "user-id") String targetUserId,
                                            @RequestBody TenantRequestDto.TenantUserUpdate tenantUserUpdate) {
-        tenantService.updateUser(userId, tenantId, targetUserId, tenantUserUpdate);
+        tenantService.updateUser(tenantId, targetUserId, tenantUserUpdate);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @TenantAdminOnly
+    @PostMapping("/tenant/{tenant-id}/users")
+    public ResponseEntity<Void> addUser(@PathVariable(name = "tenant-id") String tenantId,
+                                        @RequestBody TenantRequestDto.TenantUserAdd tenantUserAdd) {
+        tenantService.addUser(tenantUserAdd, tenantId, false);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @TenantAdminOnly
     @DeleteMapping("/tenant/{tenant-id}")
-    public ResponseEntity<Void> deleteTenant(@RequestHeader(name = "X-USER-ID") String userId,
-                                             @PathVariable(name = "tenant-id") String tenantId) {
-        tenantService.deleteTenant(userId, tenantId);
+    public ResponseEntity<Void> deleteTenant(@PathVariable(name = "tenant-id") String tenantId) {
+        tenantService.deleteTenant(tenantId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
