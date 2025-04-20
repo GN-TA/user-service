@@ -30,7 +30,7 @@ public class GatewayServiceImpl implements GatewayService {
         }
 
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(API_HOST).path(PATH_PREFIX);
-        if (limit > 0) {
+        if (limit >= 0) {
             if (limit == 0) {
                 limit = chirpStackRestService.get(uriBuilder.toUriString(), GatewayListResponse.class).getTotalCount();
             }
@@ -43,14 +43,14 @@ public class GatewayServiceImpl implements GatewayService {
             uriBuilder.queryParam("search", search);
         }
         return chirpStackRestService.get(
-                uriBuilder.toUriString(),
+                uriBuilder.queryParam("tenantId", tenantId).toUriString(),
                 GatewayListResponse.class
         );
     }
 
     @Override
     public GatewayResponse getGateway(String gatewayId) {
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(API_HOST).path(PATH_PREFIX).path("gatewayId");
+        UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(API_HOST).path(PATH_PREFIX).path("/").path(gatewayId);
         return chirpStackRestService.get(
                 uriBuilder.toUriString(),
                 GatewayResponse.class
@@ -70,7 +70,7 @@ public class GatewayServiceImpl implements GatewayService {
     @Override
     public void updateGateway(String gatewayId, GatewayRequest gateway) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(API_HOST).path(PATH_PREFIX).path("/").path(gatewayId);
-        chirpStackRestService.post(
+        chirpStackRestService.put(
                 uriBuilder.toUriString(),
                 Void.class,
                 gateway

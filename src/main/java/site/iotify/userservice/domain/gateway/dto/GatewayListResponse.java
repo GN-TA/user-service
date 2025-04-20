@@ -11,6 +11,7 @@ public class GatewayListResponse {
     private List<GatewayInfoDto> result;
     private int totalCount;
 
+    @Getter
     public static class GatewayInfoDto {
         private ZonedDateTime createdAt;
         private String description;
