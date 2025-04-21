@@ -9,6 +9,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import site.iotify.userservice.domain.tenant.dto.TenantResponseDto;
 import site.iotify.userservice.global.adaptor.ChirpstackAdaptor;
+import site.iotify.userservice.global.exception.TenantNotFoundException;
 import site.iotify.userservice.global.exception.UnAuthorizedException;
 
 import java.util.Arrays;
@@ -30,7 +31,8 @@ public class MethodAspect {
                 .dropWhile(e -> !"tenant".equals(e))
                 .skip(1)
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> new TenantNotFoundException("tenant not found"));
+        chirpstackAdaptor.getTenant(tenantId);
         TenantResponseDto.TenantUserGet tenantUser = chirpstackAdaptor.getTenantUser(tenantId, userId);
 
         if (!tenantUser.getTenantUser().isAdmin()) {
