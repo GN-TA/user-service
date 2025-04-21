@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -51,5 +52,25 @@ public class TenantRequestDto {
     @Getter
     public static class TenantUserAdd {
         private String email;
+    }
+
+    @Getter
+    @ToString
+    public static class ChirpstackTenantUpdate {
+        private boolean canHaveGateways;
+        private String description;
+        private int maxDeviceCount;
+        private int maxGatewayCount;
+        private String name;
+        private boolean privateGatewaysDown;
+        private boolean privateGatewaysUp;
+        private Map<String, String> tags;
+        private String ip;
+    }
+
+    @ToString
+    @Getter
+    public static class TenantUpdate {
+        private TenantRequestDto.ChirpstackTenantUpdate tenant;
     }
 }

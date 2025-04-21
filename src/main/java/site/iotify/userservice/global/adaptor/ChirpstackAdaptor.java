@@ -129,15 +129,15 @@ public class ChirpstackAdaptor {
         return tenantDto.getBody();
     }
 
-    public void updateTenant(TenantRequestDto.ChirpstackTenantCreate tenantDto) {
-        HttpEntity<TenantRequestDto.ChirpstackTenantCreate> httpEntity = HttpEntityFactory.<TenantRequestDto.ChirpstackTenantCreate>builder()
+    public void updateTenant(String tenantId, TenantRequestDto.TenantUpdate tenantDto) {
+        HttpEntity<TenantRequestDto.TenantUpdate> httpEntity = HttpEntityFactory.<TenantRequestDto.TenantUpdate>builder()
                 .contentType(MediaType.APPLICATION_JSON)
                 .setBearerAuth(key)
                 .body(tenantDto)
                 .build();
 
         UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(host)
-                .path(String.format("/api/tenants/%s", tenantDto.getTenant().getId()));
+                .path(String.format("/api/tenants/%s", tenantId));
 
         restTemplate.exchange(uriComponentsBuilder.toUriString(),
                 HttpMethod.PUT,

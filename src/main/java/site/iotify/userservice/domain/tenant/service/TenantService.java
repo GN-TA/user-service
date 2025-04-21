@@ -97,9 +97,9 @@ public class TenantService {
      * @param tenantInfo
      * @return
      */
-    public void updateTenant(TenantRequestDto.TenantCreate tenantDto) {
-        TenantResponseDto.TenantGetWrapped tenantGetWrapped = chirpstackAdaptor.getTenant(tenantDto.getId());
-        chirpstackAdaptor.updateTenant(new TenantRequestDto.ChirpstackTenantCreate(tenantDto, tenantGetWrapped.getCreatedAt(), LocalDateTime.now()));
+    public void updateTenant(String tenantId, TenantRequestDto.TenantUpdate tenantDto) {
+        System.out.println(tenantDto.getTenant());
+        chirpstackAdaptor.updateTenant(tenantId, tenantDto);
     }
 
     public void addUser(TenantRequestDto.TenantUserAdd tenantUserAdd, String tenantId, boolean isAdmin) {
