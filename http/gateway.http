@@ -1,0 +1,62 @@
+### 게이트웨이 목록 조회
+GET http://localhost:8092/v1/gateways?limit=10&offset=0&search=&tenantId=395fe3ef-bbce-4ee3-bba8-8488cfa8f6ac
+Accept: application/json
+
+### 특정 게이트웨이 조회
+GET http://localhost:8092/v1/gateways/24e124fffef79304
+Accept: application/json
+
+### 게이트웨이 등록
+POST http://localhost:8092/v1/gateways
+Content-Type: application/json
+
+{
+  "gateway": {
+    "gatewayId": "647fdafffe0086a3",
+    "name": "TEST Gateway",
+    "description": "테스트용 게이트웨이입니다",
+    "tenantId": "395fe3ef-bbce-4ee3-bba8-8488cfa8f6ac",
+    "statsInterval": 300,
+    "location": {
+      "lat": 37.5665,
+      "lng": 126.9780
+    },
+    "metadata": {
+      "manufacturer": "IOTify",
+      "model": "X1000"
+    },
+    "tags": {
+      "region": "seoul",
+      "floor": "3F"
+    }
+  }
+}
+
+### 게이트웨이 수정
+PUT http://localhost:8092/v1/gateways/647fdafffe0086a3
+Content-Type: application/json
+
+{
+  "gateway": {
+    "gatewayId": "647fdafffe0086a3",
+    "name": "Updated Gateway Name",
+    "description": "설명을 수정했습니다",
+    "tenantId": "",
+    "statsInterval": 600,
+    "location": {
+      "lat": 37.5678,
+      "lng": 126.9890
+    },
+    "metadata": {
+      "manufacturer": "IOTify",
+      "model": "X1000-rev2"
+    },
+    "tags": {
+      "region": "seoul",
+      "floor": "4F"
+    }
+  }
+}
+
+### 게이트웨이 삭제
+DELETE http://localhost:8092/v1/gateways/647fdafffe0086a3
