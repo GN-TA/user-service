@@ -56,6 +56,21 @@ public class TenantController {
     }
 
     /**
+     * 조직 정보를 업데이트 합니다.
+     *
+     * @param tenantId
+     * @param tenantUpdate
+     * @return
+     */
+    @TenantAdminOnly
+    @PostMapping("/tenant/{tenant-id}")
+    public ResponseEntity<Void> updateTenant(@PathVariable("tenant-id") String tenantId,
+                                             @RequestBody TenantRequestDto.TenantUpdate tenantUpdate) {
+        tenantService.updateTenant(tenantId, tenantUpdate);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    /**
      * tenant 의 유저를 삭제합니다.
      *
      * @param userId
@@ -65,6 +80,7 @@ public class TenantController {
      */
     @TenantAdminOnly
     @DeleteMapping("/tenant/{tenant-id}/user/{user-id}")
+
     public ResponseEntity<Void> removeUser(@RequestHeader(name = "X-USER-ID") String userId,
                                            @PathVariable(name = "tenant-id") String tenantId,
                                            @PathVariable(name = "user-id") String targetUserId) {
