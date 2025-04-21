@@ -25,7 +25,7 @@ public class GatewayRequest {
         @NotBlank(message="name을 입력해주세요")
         private String name;
 
-        private String statsInterval;
+        private Long statsInterval;
 
         private Map<String, Object> tags;
 
