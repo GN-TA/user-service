@@ -23,9 +23,9 @@ spring:
         web-allow-others: true
 
 chirpstack:
-  host:
+  host: https://b9d8-112-216-11-34.ngrok-free.app
   admin:
-    api:
+    api: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJjaGlycHN0YWNrIiwiaXNzIjoiY2hpcnBzdGFjayIsInN1YiI6IjBlMjAyNDgzLWNiM2YtNGUxMi1hYjZhLWQwZTc1NmVjYTZhNiIsInR5cCI6ImtleSJ9.T6CS79Ibmho8zxViLkkCX5pdl1VyGCNERUjavrSr-Fw
 
 logging:
   level:

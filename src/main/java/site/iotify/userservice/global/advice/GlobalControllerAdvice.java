@@ -20,9 +20,9 @@ import site.iotify.userservice.global.exception.UserNotFoundException;
 public class GlobalControllerAdvice {
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException e) {
+    public ResponseEntity<String> handleUserNotFoundException(UserNotFoundException e) {
         log.error(e.getMessage(), e);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
     @ExceptionHandler(UnAuthorizedException.class)

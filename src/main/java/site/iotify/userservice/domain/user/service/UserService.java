@@ -83,6 +83,7 @@ public class UserService {
      * @throws UserAlreadyExistsException 주어진 ID를 가진 사용자가 이미 존재할 경우 발생
      */
     public void registerUser(UserDto userDto) {
+        System.out.println("qwer"+userDto);
         User user = userRepository.findByEmail(userDto.getEmail()).orElse(null);
         if (user != null) {
             throw new UserAlreadyExistsException(user.getEmail());
