@@ -8,7 +8,6 @@ import org.springframework.web.multipart.MultipartFile;
 import site.iotify.userservice.domain.user.dto.UserDto;
 import site.iotify.userservice.domain.user.dto.request.UserRequestDto;
 import site.iotify.userservice.domain.user.dto.response.UserResponseDto;
-import site.iotify.userservice.domain.user.service.EmailVerificationService;
 import site.iotify.userservice.domain.user.service.UserService;
 import site.iotify.userservice.global.exception.UnAuthenticatedException;
 import site.iotify.userservice.global.exception.UnAuthorizedException;
@@ -20,11 +19,9 @@ import site.iotify.userservice.global.exception.UserNotFoundException;
 public class UserController {
 
     private final UserService userService;
-    private final EmailVerificationService emailVerificationService;
 
-    public UserController(UserService userService, EmailVerificationService emailVerificationService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.emailVerificationService = emailVerificationService;
     }
 
     /**
@@ -79,10 +76,7 @@ public class UserController {
      */
     @PostMapping("/user")
     public ResponseEntity<String> registerUser(@RequestBody UserDto userRegistrationRequest) {
-        if (userRegistrationRequest.getProvider() == null &&
-                !emailVerificationService.isEmailVerified(userRegistrationRequest.getEmail())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이메일 인증이 필요합니다.");
-        }
+
         try {
             userService.registerUser(userRegistrationRequest);
         } catch (UserAlreadyExistsException e) {
