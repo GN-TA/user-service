@@ -6,12 +6,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class ChirpStackRestService extends RestTemplateServiceImpl {
+public class ChirpstackRestService extends RestTemplateServiceImpl {
 
     @Value("${chirpstack.admin.api}")
     private String API_KEY;
 
-    public ChirpStackRestService(RestTemplate restTemplate) {
+    public ChirpstackRestService(RestTemplate restTemplate) {
         super(restTemplate);
     }
 

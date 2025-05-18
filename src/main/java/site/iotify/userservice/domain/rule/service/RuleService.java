@@ -6,7 +6,7 @@ import site.iotify.userservice.domain.rule.dto.response.RuleResponseDto;
 import java.util.List;
 
 public interface RuleService {
-//    RuleResponseDto createRule(RuleRequestDto ruleRequestDto);
+    RuleResponseDto createRule(RuleRequestDto.RuleCreate ruleRequestDto);
 
     RuleResponseDto getRule(String tenantId);
 
