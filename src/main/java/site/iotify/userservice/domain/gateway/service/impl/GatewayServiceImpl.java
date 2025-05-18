@@ -14,7 +14,7 @@ import site.iotify.userservice.domain.gateway.service.RestTemplateService;
 @Service
 @RequiredArgsConstructor
 public class GatewayServiceImpl implements GatewayService {
-    private final RestTemplateService chirpStackRestService;
+    private final RestTemplateService chirpstackRestService;
     private final String PATH_PREFIX = "/api/gateways";
 
     @Value("${chirpstack.host}")
@@ -32,7 +32,7 @@ public class GatewayServiceImpl implements GatewayService {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(API_HOST).path(PATH_PREFIX);
         if (limit >= 0) {
             if (limit == 0) {
-                limit = chirpStackRestService.get(uriBuilder.toUriString(), GatewayListResponse.class).getTotalCount();
+                limit = chirpstackRestService.get(uriBuilder.toUriString(), GatewayListResponse.class).getTotalCount();
             }
             uriBuilder.queryParam("limit", limit);
         }
@@ -42,7 +42,7 @@ public class GatewayServiceImpl implements GatewayService {
         if (!search.trim().isEmpty()) {
             uriBuilder.queryParam("search", search);
         }
-        return chirpStackRestService.get(
+        return chirpstackRestService.get(
                 uriBuilder.queryParam("tenantId", tenantId).toUriString(),
                 GatewayListResponse.class
         );
@@ -51,7 +51,7 @@ public class GatewayServiceImpl implements GatewayService {
     @Override
     public GatewayResponse getGateway(String gatewayId) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(API_HOST).path(PATH_PREFIX).path("/").path(gatewayId);
-        return chirpStackRestService.get(
+        return chirpstackRestService.get(
                 uriBuilder.toUriString(),
                 GatewayResponse.class
         );
@@ -60,7 +60,7 @@ public class GatewayServiceImpl implements GatewayService {
     @Override
     public void saveGateway(GatewayRequest gateway) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(API_HOST).path(PATH_PREFIX);
-        chirpStackRestService.post(
+        chirpstackRestService.post(
                 uriBuilder.toUriString(),
                 Void.class,
                 gateway
@@ -70,7 +70,7 @@ public class GatewayServiceImpl implements GatewayService {
     @Override
     public void updateGateway(String gatewayId, GatewayRequest gateway) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(API_HOST).path(PATH_PREFIX).path("/").path(gatewayId);
-        chirpStackRestService.put(
+        chirpstackRestService.put(
                 uriBuilder.toUriString(),
                 Void.class,
                 gateway
@@ -80,7 +80,7 @@ public class GatewayServiceImpl implements GatewayService {
     @Override
     public void deleteGateway(String gatewayId) {
         UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromHttpUrl(API_HOST).path(PATH_PREFIX).path("/").path(gatewayId);
-        chirpStackRestService.delete(
+        chirpstackRestService.delete(
                 uriBuilder.toUriString(),
                 Void.class
         );

@@ -1,22 +1,32 @@
 package site.iotify.userservice.domain.rule.service.impl;
 
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import site.iotify.userservice.domain.gateway.service.RestTemplateService;
 import site.iotify.userservice.domain.rule.dto.request.RuleRequestDto;
 import site.iotify.userservice.domain.rule.dto.response.RuleResponseDto;
 import site.iotify.userservice.domain.rule.exception.NodeRedException;
 import site.iotify.userservice.domain.rule.service.RuleService;
-import site.iotify.userservice.global.adaptor.ChirpstackAdaptor;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 @Service
-@RequiredArgsConstructor
 public class RuleServiceImpl implements RuleService {
-    private final ChirpstackAdaptor chirpstackAdaptor;
+    private final RestTemplateService restTemplateService;
+    private final ObjectMapper objectMapper;
 
-    private RuleResponseDto createRule(RuleRequestDto ruleRequestDto) {
+    public RuleServiceImpl(@Qualifier("restTemplateServiceImpl") RestTemplateService restTemplateService,
+                           ObjectMapper objectMapper) {
+        this.restTemplateService = restTemplateService;
+        this.objectMapper = objectMapper;
+    }
+
+    public RuleResponseDto createRule(RuleRequestDto.RuleCreate ruleRequestDto) {
         String tenantId = ruleRequestDto.getTenantId();
         int port = 18000 + Math.abs(tenantId.hashCode() % 55536);
         try {
@@ -49,7 +59,7 @@ public class RuleServiceImpl implements RuleService {
 
             int port = 0;
             if (portMapping == null) {
-                port = createRule(new RuleRequestDto(tenantId)).getPort();
+                port = createRule(new RuleRequestDto.RuleCreate(null, tenantId)).getPort();
             } else {
                 port = Integer.parseInt(portMapping.split(":")[1]);
             }
